@@ -11,7 +11,7 @@ function createBubbleChart(data) {
       }), 
       d => d.type1
   );
-  console.log(averageData);
+
   //Color scale for types
   const typeColors = {
       "normal": "#A8A77A",
@@ -78,5 +78,23 @@ function createBubbleChart(data) {
   svg.append("g")
       .attr("transform", `translate(${margin.left}, 0)`)
       .call(yAxis);
+
+  //Label the axes
+  svg
+    .append("text")
+    .attr("class", "x-axis-label")
+    .attr("x", width / 2)
+    .attr("y", height + margin.top - 20)
+    .style("text-anchor", "middle")
+    .text("Steps by type");
+
+  svg
+    .append("text")
+    .attr("class", "y-axis-label")
+    .attr("x", -height / 2)
+    .attr("y", -margin.left + 40)
+    .style("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
+    .text("Height by type");
 
 }

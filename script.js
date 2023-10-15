@@ -1,7 +1,7 @@
-// Declare a variable to hold the loaded JSON data.
+//Declare a variable to hold the loaded JSON data.
 var globalData;
 
-// Define margin and dimensions for the charts
+//Define margin and dimensions for the charts
 const margin = {
     top: 20,
     right: 20,
@@ -11,12 +11,13 @@ const margin = {
 const width = 600 - margin.left - margin.right;
 const height = 400 - margin.top - margin.bottom;
   
-// Function to start the dashboard
+//Function to start the dashboard
 function startDashboard() {
 
     d3.csv("pokemon_data.csv")
     .then((data) => {
 
+        //Data is stored as strings. This piece of the code makes sure numbers are read as integers.
         data.forEach((d) => {
             d.attack = +d.attack;
             d.speed = +d.speed;
@@ -31,7 +32,7 @@ function startDashboard() {
 
     })
     .catch((error) => {
-        // If there's an error while loading the CSV data, log the error.
+        //If there's an error while loading the CSV data, log the error.
         console.error("Error loading the CSV file:", error);
       });
 
