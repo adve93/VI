@@ -61,6 +61,8 @@ function createBubbleChart(data) {
       .attr("cy", d => yScale(d[1].averageHeight))
       .attr("r", d => Math.sqrt(d[1].typeLength))
       .attr("fill", d => typeColors[d[1].type])
+      .attr('stroke-width',1)
+      .attr("stroke", "black")
       .append("title")
       .text( d =>
           `Type: ${d[1].type}\nN Pokemon: ${d[1].typeLength}\nAverage Steps:${Math.round(d[1].averageBaseEggSteps)}\nAverage Height:${Math.round(d[1].averageHeight*10)/10}`
