@@ -20,6 +20,8 @@ function startDashboard() {
         data.forEach((d) => {
             d.attack = +d.attack;
             d.speed = +d.speed;
+            d.base_egg_steps = +d.base_egg_steps;
+            d.height_m = +d.height_m;
         });
         
         globalData = data;
@@ -37,52 +39,76 @@ function startDashboard() {
 
 // Function to create a bar chart
 function createBarChart(data) {
-    // Select the #barChart element and append an SVG to it
-    currentData = data.filter(function (d) {
-        return d.generation == 1;
-    });
-    console.log(d3.max(data, (d) => d.attack));
-    const svg = d3
-      .select("#testBarChart")
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Create x and y scales for the bar chart
-    const xScale = d3
-    .scaleLinear()
-    .domain([d3.min(data, (d) => d.speed), d3.max(data, (d) => d.speed)])
-    .range([0, width]);
+    // Calculate average values for height_m and base_egg_steps by type
+    const averageData = d3.rollup(data, 
+        group => ({
+            averageHeight: d3.mean(group, d => d.height_m),
+            averageBaseEggSteps: d3.mean(group, d => d.base_egg_steps),
+            type: group[0].type1
+        }), 
+        d => d.type1
+    );
+    
+    // Color scale for types
+    const typeColors = {
+        "Normal": "#A8A77A",
+        "Fire": "#EE8130",
+        "Water": "#6390F0",
+        "Electric": "#F7D02C",
+        "Grass": "#7AC74C",
+        "Ice": "#96D9D6",
+        "Fighting": "#C22E28",
+        "Poison": "#A33EA1",
+        "Ground": "#E2BF65",
+        "Flying": "#A98FF3",
+        "Psychic": "#F95587",
+        "Bug": "#A6B91A",
+        "Rock": "#B6A136",
+        "Ghost": "#735797",
+        "Steel": "#B7B7CE",
+        "Dragon": "#6F35FC",
+        "Dark": "#705746",
+        "Fairy": "#D685AD"
+    };
 
-    const yScale = d3
-    .scaleLinear()
-    .domain([d3.min(data, (d) => d.attack), d3.max(data, (d) => d.attack)])
-    .range([height, 0]);
+    //Selecting HTML element and appeding svg element
+    const svg = d3.select("#bubbleChart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Define scales for x and y
+    const xScale = d3.scaleLinear()
+        .domain([0, d3.max(averageData.values(), d => d.averageBaseEggSteps)])
+        .range([margin.left, width - margin.right]);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, d3.max(averageData.values(), d => d.averageHeight)])
+        .range([height - margin.bottom, margin.top]);
 
     // Add circles to the scatter plot representing each country
-    svg
-    .selectAll(".circle")
-    .data(currentData, (d) => d.name)
-    .enter()
-    .append("circle")
-    .attr("class", "circle data")
-    .attr("cx", (d) => xScale(d.speed))
-    .attr("cy", (d) => yScale(d.attack))
-    .attr("r", 5)
-    .attr("fill", "steelblue")
-    .attr("stroke", "black")
+    svg.selectAll(".circle")
+        .data(averageData)
+        .enter()
+        .append("circle")
+        .attr("class", "circle data")
+        .attr("cx", d => xScale(d[1].averageBaseEggSteps))
+        .attr("cy", d => yScale(d[1].averageHeight))
+        .attr("r", 5)
+        .attr("fill", d => typeColors[d[1].type])
 
-    // Append x and y axes to the chart
-    svg
-    .append("g")
-    .attr("class", "x-axis")
-    .attr("transform", `translate(0,${height})`)
-    .call(d3.axisBottom(xScale));
+    // Add axes
+    const xAxis = d3.axisBottom(xScale);
+    const yAxis = d3.axisLeft(yScale);
 
-    svg
-    .append("g")
-    .attr("class", "y-axis")
-    .call(d3.axisLeft(yScale).tickSizeOuter(0));
+    svg.append("g")
+        .attr("transform", `translate(0, ${height - margin.bottom})`)
+        .call(xAxis);
+
+    svg.append("g")
+        .attr("transform", `translate(${margin.left}, 0)`)
+        .call(yAxis);
 }

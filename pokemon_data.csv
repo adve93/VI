@@ -17,16 +17,16 @@
 15,Pidgey,1,0.3,1.8,normal,flying,"['Keen Eye', 'Tangled Feet', 'Big Pecks']",40,45,40,56,35,35,3840,50.0,0
 16,Pidgeotto,1,1.1,30.0,normal,flying,"['Keen Eye', 'Tangled Feet', 'Big Pecks']",63,60,55,71,50,50,3840,50.0,0
 17,Pidgeot,1,1.5,39.5,normal,flying,"['Keen Eye', 'Tangled Feet', 'Big Pecks']",83,80,80,121,135,80,3840,50.0,0
-18,Rattata,1,-1.0,-1.0,normal,dark,"['Run Away', 'Guts', 'Hustle', 'Gluttony', 'Hustle', 'Thick Fat']",30,56,35,72,25,35,3840,50.0,0
-19,Raticate,1,-1.0,-1.0,normal,dark,"['Run Away', 'Guts', 'Hustle', 'Gluttony', 'Hustle', 'Thick Fat']",75,71,70,77,40,80,3840,50.0,0
+18,Rattata,1,,0.3,normal,dark,"['Run Away', 'Guts', 'Hustle', 'Gluttony', 'Hustle', 'Thick Fat']",30,56,35,72,25,35,3840,50.0,0
+19,Raticate,1,,0.7,normal,dark,"['Run Away', 'Guts', 'Hustle', 'Gluttony', 'Hustle', 'Thick Fat']",75,71,70,77,40,80,3840,50.0,0
 20,Spearow,1,0.3,2.0,normal,flying,"['Keen Eye', 'Sniper']",40,60,30,70,31,31,3840,50.0,0
 21,Fearow,1,1.2,38.0,normal,flying,"['Keen Eye', 'Sniper']",65,90,65,100,61,61,3840,50.0,0
 22,Ekans,1,2.0,6.9,poison,-1,"['Intimidate', 'Shed Skin', 'Unnerve']",35,60,44,55,40,54,5120,50.0,0
 23,Arbok,1,3.5,65.0,poison,-1,"['Intimidate', 'Shed Skin', 'Unnerve']",60,95,69,80,65,79,5120,50.0,0
 24,Pikachu,1,0.4,6.0,electric,-1,"['Static', 'Lightningrod']",35,55,40,90,50,50,2560,50.0,0
-25,Raichu,1,-1.0,-1.0,electric,electric,"['Static', 'Lightningrod', 'Surge Surfer']",60,85,50,110,95,85,2560,50.0,0
-26,Sandshrew,1,-1.0,-1.0,ground,ice,"['Sand Veil', 'Sand Rush', 'Snow Cloak', 'Slush Rush']",50,75,90,40,10,35,5120,50.0,0
-27,Sandslash,1,-1.0,-1.0,ground,ice,"['Sand Veil', 'Sand Rush', 'Snow Cloak', 'Slush Rush']",75,100,120,65,25,65,5120,50.0,0
+25,Raichu,1,,0.8,electric,electric,"['Static', 'Lightningrod', 'Surge Surfer']",60,85,50,110,95,85,2560,50.0,0
+26,Sandshrew,1,,0.6,ground,ice,"['Sand Veil', 'Sand Rush', 'Snow Cloak', 'Slush Rush']",50,75,90,40,10,35,5120,50.0,0
+27,Sandslash,1,,1.0,ground,ice,"['Sand Veil', 'Sand Rush', 'Snow Cloak', 'Slush Rush']",75,100,120,65,25,65,5120,50.0,0
 28,Nidoran♀,1,0.4,7.0,poison,-1,"['Poison Point', 'Rivalry', 'Hustle']",55,47,52,41,40,40,5120,0.0,0
 29,Nidorina,1,0.8,20.0,poison,-1,"['Poison Point', 'Rivalry', 'Hustle']",70,62,67,56,55,55,5120,0.0,0
 30,Nidoqueen,1,1.3,60.0,poison,ground,"['Poison Point', 'Rivalry', 'Sheer Force']",90,92,87,76,75,85,5120,0.0,0
@@ -35,8 +35,8 @@
 33,Nidoking,1,1.4,62.0,poison,ground,"['Poison Point', 'Rivalry', 'Sheer Force']",81,102,77,85,85,75,5120,100.0,0
 34,Clefairy,1,0.6,7.5,fairy,-1,"['Cute Charm', 'Magic Guard', 'Friend Guard']",70,45,48,35,60,65,2560,24.6,0
 35,Clefable,1,1.3,40.0,fairy,-1,"['Cute Charm', 'Magic Guard', 'Unaware']",95,70,73,60,95,90,2560,24.6,0
-36,Vulpix,1,-1.0,-1.0,fire,ice,"['Flash Fire', 'Drought', 'Snow Cloak', 'Snow Warning']",38,41,40,65,50,65,5120,24.6,0
-37,Ninetales,1,-1.0,-1.0,fire,ice,"['Flash Fire', 'Drought', 'Snow Cloak', 'Snow Warning']",73,67,75,109,81,100,5120,24.6,0
+36,Vulpix,1,,0.6,fire,ice,"['Flash Fire', 'Drought', 'Snow Cloak', 'Snow Warning']",38,41,40,65,50,65,5120,24.6,0
+37,Ninetales,1,,1.1,fire,ice,"['Flash Fire', 'Drought', 'Snow Cloak', 'Snow Warning']",73,67,75,109,81,100,5120,24.6,0
 38,Jigglypuff,1,0.5,5.5,normal,fairy,"['Cute Charm', 'Competitive', 'Friend Guard']",115,45,20,20,45,25,2560,24.6,0
 39,Wigglytuff,1,1.0,12.0,normal,fairy,"['Cute Charm', 'Competitive', 'Frisk']",140,70,45,45,85,50,2560,24.6,0
 40,Zubat,1,0.8,7.5,poison,flying,"['Inner Focus', 'Infiltrator']",40,45,35,55,30,40,3840,50.0,0
@@ -48,10 +48,10 @@
 46,Parasect,1,1.0,29.5,bug,grass,"['Effect Spore', 'Dry Skin', 'Damp']",60,95,80,30,60,80,5120,50.0,0
 47,Venonat,1,1.0,30.0,bug,poison,"['Compoundeyes', 'Tinted Lens', 'Run Away']",60,55,50,45,40,55,5120,50.0,0
 48,Venomoth,1,1.5,12.5,bug,poison,"['Shield Dust', 'Tinted Lens', 'Wonder Skin ']",70,65,60,90,90,75,5120,50.0,0
-49,Diglett,1,-1.0,-1.0,ground,ground,"['Sand Veil', 'Arena Trap', 'Sand Force', 'Sand Veil', 'Tangling Hair', 'Sand Force']",10,55,30,90,35,45,5120,50.0,0
-50,Dugtrio,1,-1.0,-1.0,ground,ground,"['Sand Veil', 'Arena Trap', 'Sand Force', 'Sand Veil', 'Tangling Hair', 'Sand Force']",35,100,60,110,50,70,5120,50.0,0
-51,Meowth,1,-1.0,-1.0,normal,dark,"['Pickup', 'Technician', 'Unnerve', 'Pickup', 'Technician', 'Rattled']",40,35,35,90,50,40,5120,50.0,0
-52,Persian,1,-1.0,-1.0,normal,dark,"['Limber', 'Technician', 'Unnerve', 'Fur Coat', 'Technician', 'Rattled']",65,60,60,115,75,65,5120,50.0,0
+49,Diglett,1,,0.2,ground,ground,"['Sand Veil', 'Arena Trap', 'Sand Force', 'Sand Veil', 'Tangling Hair', 'Sand Force']",10,55,30,90,35,45,5120,50.0,0
+50,Dugtrio,1,,0.7,ground,ground,"['Sand Veil', 'Arena Trap', 'Sand Force', 'Sand Veil', 'Tangling Hair', 'Sand Force']",35,100,60,110,50,70,5120,50.0,0
+51,Meowth,1,,0.4,normal,dark,"['Pickup', 'Technician', 'Unnerve', 'Pickup', 'Technician', 'Rattled']",40,35,35,90,50,40,5120,50.0,0
+52,Persian,1,,1.0,normal,dark,"['Limber', 'Technician', 'Unnerve', 'Fur Coat', 'Technician', 'Rattled']",65,60,60,115,75,65,5120,50.0,0
 53,Psyduck,1,0.8,19.6,water,-1,"['Damp', 'Cloud Nine', 'Swift Swim']",50,52,48,55,65,50,5120,50.0,0
 54,Golduck,1,1.7,76.6,water,-1,"['Damp', 'Cloud Nine', 'Swift Swim']",80,82,78,85,95,80,5120,50.0,0
 55,Mankey,1,0.5,28.0,fighting,-1,"['Vital Spirit', 'Anger Point', 'Defiant']",40,80,35,70,35,45,5120,50.0,0
@@ -72,9 +72,9 @@
 70,Victreebel,1,1.7,15.5,grass,poison,"['Chlorophyll', 'Gluttony']",80,105,65,70,100,70,5120,50.0,0
 71,Tentacool,1,0.9,45.5,water,poison,"['Clear Body', 'Liquid Ooze', 'Rain Dish']",40,40,35,70,50,100,5120,50.0,0
 72,Tentacruel,1,1.6,55.0,water,poison,"['Clear Body', 'Liquid Ooze', 'Rain Dish']",80,70,65,100,80,120,5120,50.0,0
-73,Geodude,1,-1.0,-1.0,rock,ground,"['Rock Head', 'Sturdy', 'Sand Veil', 'Magnet Pull', 'Sturdy', 'Galvanize']",40,80,100,20,30,30,3840,50.0,0
-74,Graveler,1,-1.0,-1.0,rock,ground,"['Rock Head', 'Sturdy', 'Sand Veil', 'Magnet Pull', 'Sturdy', 'Galvanize']",55,95,115,35,45,45,3840,50.0,0
-75,Golem,1,-1.0,-1.0,rock,ground,"['Rock Head', 'Sturdy', 'Sand Veil', 'Magnet Pull', 'Sturdy', 'Galvanize']",80,120,130,45,55,65,3840,50.0,0
+73,Geodude,1,,0.4,rock,ground,"['Rock Head', 'Sturdy', 'Sand Veil', 'Magnet Pull', 'Sturdy', 'Galvanize']",40,80,100,20,30,30,3840,50.0,0
+74,Graveler,1,,1.0,rock,ground,"['Rock Head', 'Sturdy', 'Sand Veil', 'Magnet Pull', 'Sturdy', 'Galvanize']",55,95,115,35,45,45,3840,50.0,0
+75,Golem,1,,1.4,rock,ground,"['Rock Head', 'Sturdy', 'Sand Veil', 'Magnet Pull', 'Sturdy', 'Galvanize']",80,120,130,45,55,65,3840,50.0,0
 76,Ponyta,1,1.0,30.0,fire,-1,"['Run Away', 'Flash Fire', 'Flame Body']",50,85,55,90,65,65,5120,50.0,0
 77,Rapidash,1,1.7,95.0,fire,-1,"['Run Away', 'Flash Fire', 'Flame Body']",65,100,70,105,80,80,5120,50.0,0
 78,Slowpoke,1,1.2,36.0,water,psychic,"['Oblivious', 'Own Tempo', 'Regenerator']",90,65,65,15,40,40,5120,50.0,0
@@ -86,8 +86,8 @@
 84,Dodrio,1,1.8,85.2,normal,flying,"['Run Away', 'Early Bird', 'Tangled Feet']",60,110,70,110,60,60,5120,50.0,0
 85,Seel,1,1.1,90.0,water,-1,"['Thick Fat', 'Hydration', 'Ice Body']",65,45,55,45,45,70,5120,50.0,0
 86,Dewgong,1,1.7,120.0,water,ice,"['Thick Fat', 'Hydration', 'Ice Body']",90,70,80,70,70,95,5120,50.0,0
-87,Grimer,1,-1.0,-1.0,poison,poison,"['Stench', 'Sticky Hold', 'Poison Touch', 'Poison Touch', 'Gluttony', 'Power of Alchemy']",80,80,50,25,40,50,5120,50.0,0
-88,Muk,1,-1.0,-1.0,poison,poison,"['Stench', 'Sticky Hold', 'Poison Touch', 'Poison Touch', 'Gluttony', 'Power of Alchemy']",105,105,75,50,65,100,5120,50.0,0
+87,Grimer,1,,0.9,poison,poison,"['Stench', 'Sticky Hold', 'Poison Touch', 'Poison Touch', 'Gluttony', 'Power of Alchemy']",80,80,50,25,40,50,5120,50.0,0
+88,Muk,1,,1.2,poison,poison,"['Stench', 'Sticky Hold', 'Poison Touch', 'Poison Touch', 'Gluttony', 'Power of Alchemy']",105,105,75,50,65,100,5120,50.0,0
 89,Shellder,1,0.3,4.0,water,-1,"['Shell Armor', 'Skill Link', 'Overcoat']",30,65,100,40,45,25,5120,50.0,0
 90,Cloyster,1,1.5,132.5,water,ice,"['Shell Armor', 'Skill Link', 'Overcoat']",50,95,180,70,85,45,5120,50.0,0
 91,Gastly,1,1.3,0.1,ghost,poison,['Levitate'],30,35,30,80,100,35,5120,50.0,0
@@ -101,9 +101,9 @@
 99,Voltorb,1,0.5,10.4,electric,-1,"['Soundproof', 'Static', 'Aftermath']",40,30,50,100,55,55,5120,-1.0,0
 100,Electrode,1,1.2,66.6,electric,-1,"['Soundproof', 'Static', 'Aftermath']",60,50,70,150,80,80,5120,-1.0,0
 101,Exeggcute,1,0.4,2.5,grass,psychic,"['Chlorophyll', 'Harvest']",60,40,80,40,60,45,5120,50.0,0
-102,Exeggutor,1,-1.0,-1.0,grass,psychic,"['Chlorophyll', 'Harvest', 'Frisk', 'Harvest']",95,105,85,45,125,75,5120,50.0,0
+102,Exeggutor,1,,2.0,grass,psychic,"['Chlorophyll', 'Harvest', 'Frisk', 'Harvest']",95,105,85,45,125,75,5120,50.0,0
 103,Cubone,1,0.4,6.5,ground,-1,"['Rock Head', 'Lightningrod', 'Battle Armor']",50,50,95,35,40,50,5120,50.0,0
-104,Marowak,1,-1.0,-1.0,ground,fire,"['Rock Head', 'Lightningrod', 'Battle Armor', 'Cursed Body', 'Lightningrod', 'Rock Head']",60,80,110,45,50,80,5120,50.0,0
+104,Marowak,1,,1.0,ground,fire,"['Rock Head', 'Lightningrod', 'Battle Armor', 'Cursed Body', 'Lightningrod', 'Rock Head']",60,80,110,45,50,80,5120,50.0,0
 105,Hitmonlee,1,1.5,49.8,fighting,-1,"['Limber', 'Reckless', 'Unburden']",50,120,53,87,35,110,6400,100.0,0
 106,Hitmonchan,1,1.4,50.2,fighting,-1,"['Keen Eye', 'Iron Fist', 'Inner Focus']",50,105,79,76,35,110,6400,100.0,0
 107,Lickitung,1,1.2,65.5,normal,-1,"['Own Tempo', 'Oblivious', 'Cloud Nine']",90,55,75,30,60,75,5120,50.0,0
@@ -718,7 +718,7 @@
 716,Yveltal,6,5.8,203.0,dark,flying,['Dark Aura'],126,131,95,99,131,98,30720,-1.0,1
 717,Zygarde,6,5.0,284.6,dragon,ground,"['Aura Break', 'Power Construct']",216,100,121,85,91,95,30720,-1.0,1
 718,Diancie,6,0.7,8.8,rock,fairy,['Clear Body'],50,160,110,110,160,110,6400,-1.0,1
-719,Hoopa,6,-1.0,-1.0,psychic,ghost,['Magician'],80,160,60,80,170,130,30720,-1.0,1
+719,Hoopa,6,,0.5,psychic,ghost,['Magician'],80,160,60,80,170,130,30720,-1.0,1
 720,Volcanion,6,1.7,195.0,fire,water,['Water Absorb'],80,110,120,70,130,90,30720,-1.0,1
 721,Rowlet,7,0.3,1.5,grass,flying,"['Overgrow', 'Long Reach']",68,55,55,42,50,50,3840,88.1,0
 722,Dartrix,7,0.7,16.0,grass,flying,"['Overgrow', 'Long Reach']",78,75,75,52,70,70,3840,88.1,0
@@ -743,7 +743,7 @@
 741,Cutiefly,7,0.1,0.2,bug,fairy,"['Honey Gather', 'Shield Dust', 'Sweet Veil']",40,45,40,84,55,40,5120,50.0,0
 742,Ribombee,7,0.2,0.5,bug,fairy,"['Honey Gather', 'Shield Dust', 'Sweet Veil']",60,55,60,124,95,70,5120,50.0,0
 743,Rockruff,7,0.5,9.2,rock,-1,"['Keen Eye', 'Vital Spirit', 'Steadfast']",45,65,40,60,30,40,3840,50.0,0
-744,Lycanroc,7,-1.0,-1.0,rock,-1,"['Keen Eye', 'Sand Rush', 'Steadfast', 'Keen Eye', 'Vital Spirit', 'No Guard']",85,115,75,82,55,75,3840,50.0,0
+744,Lycanroc,7,,0.8,rock,-1,"['Keen Eye', 'Sand Rush', 'Steadfast', 'Keen Eye', 'Vital Spirit', 'No Guard']",85,115,75,82,55,75,3840,50.0,0
 745,Wishiwashi,7,0.2,0.3,water,-1,['Schooling'],45,140,130,30,140,135,3840,50.0,0
 746,Mareanie,7,0.4,8.0,poison,water,"['Merciless', 'Limber', 'Regenerator']",50,53,62,45,43,52,5120,50.0,0
 747,Toxapex,7,0.7,14.5,poison,water,"['Merciless', 'Limber', 'Regenerator']",50,63,152,35,53,142,5120,50.0,0
