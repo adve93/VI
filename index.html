@@ -16,8 +16,11 @@
             .visualization {
                 padding: 10px;
             }
-            #choroplethTitle {
-                text-align: center;
+
+            #parallelCoordinatesPlot {
+                position: fixed;
+                bottom: 10px;
+                right: 10px;
             }
         </style>
         <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -25,9 +28,10 @@
         <script src="create.js"></script>
         <script src="script.js"></script>
     </head>
-    <body onload="startDashboard()" style="background-image: url('background.jpg');">
+    <body onload="startDashboard()" >  <!-- style="background-image: url('background.jpg');" -->
         <div class="dashboard">
             <div class="visualization" id="bubbleChart"></div>
+            <div class="visualization" id="parallelCoordinatesPlot"></div>
         </div>
         
     </body>
