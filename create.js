@@ -14,7 +14,7 @@ function createBubbleChart(data) {
 
   // Calculate the Pearson correlation coefficient (r) for your data
   const correlationCoefficient = calculatePearsonCorrelation(averageData);
-  console.log("correlationCoefficient")
+  console.log(correlationCoefficient);
 
   //Selecting HTML element and appeding svg element
   const svg = d3.select("#bubbleChart")
@@ -58,13 +58,16 @@ function createBubbleChart(data) {
           `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
       );
 
-    // Append the correlation line to the chart
-    svg.append("path")
-        .datum([0, d3.max(averageData.values(), d => d.averageBaseEggSteps)])
-        .attr("class", "correlation-line")
-        .attr("d", correlationLine)
-        .style("stroke", "red")
-        .style("stroke-width", 5);
+    // Add a Pearson correlation line
+    svg.append("line")
+        .attr("x1", xScale(d3.min(averageData, d => d[1].averageBaseEggSteps)))
+        .attr("y1", yScale(d3.min(averageData, d => d[1].averageHeight)))
+        .attr("x2", xScale(d3.max(averageData, d => d[1].averageBaseEggSteps)))
+        .attr("y2", yScale(d3.max(averageData, d => d[1].averageHeight)))
+        .style("stroke", "black")
+        .style("stroke-width", 2)
+        .append("title")
+        .text(`Pearson Correlation: ${Math.round(correlationCoefficient*1000)/1000}`)
 
 
   //Add axes
