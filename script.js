@@ -57,6 +57,7 @@ function startDashboard() {
         //Create functions
         createBubbleChart(data);
         createParallelCoordinatesPlot(data);
+        createPieChart(data);
 
     })
     .catch((error) => {

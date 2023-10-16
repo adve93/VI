@@ -252,3 +252,62 @@ function calculatePearsonCorrelation(data) {
     const r = numerator / Math.sqrt(denominatorX * denominatorY);
     return r;
 }
+
+function createPieChart(data) {
+
+    const width2 = 300;
+    const height2 = 350;
+
+
+    const male_average = d3.mean(data, d => d.percentage_male);
+    const female_average = 100 - male_average;
+
+    // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+    const radius = Math.min(width2, height2) / 2 - 40;
+
+    // append the svg object to the div called 'my_dataviz'
+    const svg = d3.select("#pieChart")
+        .append("svg")
+        .attr("width", width2)
+        .attr("height", height2)
+        .append("g")
+        .attr("transform", `translate(${width2 / 2}, ${height2 / 2})`);
+
+    // set the color scale
+    const color = d3.scaleOrdinal()
+        .range(["#5888B4", "#D3469D"])
+
+    // Compute the position of each group on the pie:
+    const pie = d3.pie()
+        .value(function (d) { return d[1] })
+    const data_ready = pie(Object.entries({ Male: male_average, Female: female_average }))
+
+    const arcGenerator = d3.arc()
+        .innerRadius(0)
+        .outerRadius(radius);
+
+    svg.selectAll('slices')
+        .data(data_ready)
+        .join('path')
+        .attr('d', d3.arc()
+            .innerRadius(0)
+            .outerRadius(radius)
+        )
+        .attr('fill', function (d) { return (color(d.data[1])) })
+        .attr("stroke", "black")
+        .style("stroke-width", "2px")
+        .style("opacity", 0.7)
+        .append("title")
+        .text(d => `${d.data[1].toFixed(2)}%`);
+
+
+    svg
+        .selectAll('slices')
+        .data(data_ready)
+        .enter()
+        .append('text')
+        .text(function (d) { return d.data[0] })
+        .attr("transform", function (d) { return "translate(" + arcGenerator.centroid(d) + ")"; })
+        .style("text-anchor", "middle")
+        .style("font-size", 17)
+}
