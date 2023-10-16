@@ -14,6 +14,7 @@ function createBubbleChart(data) {
 
   // Calculate the Pearson correlation coefficient (r) for your data
   const correlationCoefficient = calculatePearsonCorrelation(averageData);
+  console.log("correlationCoefficient")
 
   //Selecting HTML element and appeding svg element
   const svg = d3.select("#bubbleChart")
@@ -34,7 +35,7 @@ function createBubbleChart(data) {
 
     const rScale = d3.scaleLinear()
         .domain([d3.min(averageData.values(), d => d.averageWeight), d3.max(averageData.values(), d => d.averageWeight)])
-        .range([10, 35]);
+        .range([10, 20]);
 
     const correlationLine = d3.line()
         .x(d => xScale(d.averageBaseEggSteps))  // Use xScale for x-coordinate
