@@ -1,23 +1,27 @@
 function handleMouseClick(item) {
 
-    var selectedMark = null;
-    
+ 
     d3.selectAll(".data")
         .each(function (d) {
             var currentItem = d3.select(this).attr("item");
             console.log(d3.select(this).style("opacity"));
             
-
-            // Check if the mark is selected
+            // Selected mark
             if (Array.isArray(d) && item === currentItem) {
+                if (d3.select(this).style("opacity") === 1){
+
+                }
                 d3.select(this)
-                    .style("stroke-width", 2)
-                    .style("opacity", 1);
-                selectedMark = this; // Update the selected mark
+                .style("stroke-width", 2)
+                .style("opacity", 1);
+
+                d3.selectAll(".data").style("opacity", 1);
+
+            // Other marks
             } else {
                 d3.select(this)
                     .style("stroke-width", 0)
-                    .style("opacity", selectedMark === this ? 1 : 0.5);
+                    .style("opacity", 0.5);
             }
         });
 
