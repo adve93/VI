@@ -57,7 +57,10 @@ function createBubbleChart(data) {
         .attr('stroke-width',1)
         .attr("stroke", "black")
         .attr('opacity', 1.1)
-        .on("click", handleOpacityCircle)
+        .on("click", function (event, d) {
+            handleOpacityCircle
+            updatePieChart(d[1].type, data.map(d => ({ type: d.type1, male: d.percentage_male })))
+        })
         .append("title")
         .text( d =>
             `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
@@ -215,7 +218,10 @@ function createParallelCoordinatesPlot(data) {
                 .style("fill", "none")
                 .attr('opacity', 1.1)
                 .style("stroke-width", 2) // Adjust the line width
-                .on("click", handleOpacityLines)
+                .on("click", function (event, d) {
+                    handleOpacityLines
+                    updatePieChart(type, data.map(d => ({ type: d.type1, male: d.percentage_male })))
+                })
                 .append("title")
                 .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
 
@@ -228,7 +234,10 @@ function createParallelCoordinatesPlot(data) {
                 .style("fill", typeColors[type]) // Adjust the fill color
                 .attr('opacity', 1.1)
                 .attr('stroke-width', 1)
-                .on("click", handleOpacityLines)
+                .on("click", function(event,d){
+                    handleOpacityLines
+                    updatePieChart(type, data.map(d => ({ type: d.type1, male: d.percentage_male })))
+                })
                 .append("title")
                 .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
         });
@@ -296,7 +305,7 @@ function createPieChart(data) {
             .innerRadius(0)
             .outerRadius(radius)
         )
-        .attr('fill', function (d) { return (color(d.data[1])) })
+        .attr('fill', (d, i) => color(i))
         .attr("stroke", "black")
         .style("stroke-width", "2px")
         .style("opacity", 0.7)
@@ -304,6 +313,7 @@ function createPieChart(data) {
         .text(d => `${d.data[1].toFixed(2)}%`);
 
 
+    // Labels
     svg.selectAll('slices')
         .data(data_ready)
         .enter()
@@ -312,4 +322,5 @@ function createPieChart(data) {
         .attr("transform", function (d) { return "translate(" + arcGenerator.centroid(d) + ")"; })
         .style("text-anchor", "middle")
         .style("font-size", 17)
+
 }
