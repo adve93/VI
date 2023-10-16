@@ -122,7 +122,7 @@ function createParallelCoordinatesPlot(data) {
             SpDefense: d3.mean(group, d => d.sp_defense).toFixed(2),
             HP: d3.mean(group, d => d.hp).toFixed(2),
             Speed: d3.mean(group, d => d.speed).toFixed(2),
-            type: group[0].type1,
+            type: group[0].type1
         }),
         d => d.type1
     );
