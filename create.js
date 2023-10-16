@@ -48,7 +48,7 @@ function createBubbleChart(data) {
         .data(averageData)
         .enter()
         .append("circle")
-        .attr("class", "circle data")
+        .attr("class", "circle_type")
         .attr("cx", d => xScale(d[1].averageBaseEggSteps))
         .attr("cy", d => yScale(d[1].averageHeight))
         .attr("r", d => rScale(d[1].averageWeight))
@@ -56,9 +56,8 @@ function createBubbleChart(data) {
         .attr("fill", d => typeColors[d[1].type])
         .attr('stroke-width',1)
         .attr("stroke", "black")
-        .on("click", function (event, d) {
-            handleMouseClick(d[1].type);
-        })
+        .attr('opacity', 1.1)
+        .on("click", handleOpacityCircle)
         .append("title")
         .text( d =>
             `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
@@ -190,7 +189,8 @@ function createParallelCoordinatesPlot(data) {
         const lineData = dimensions.map((dimension, j) => {
             const xPosition = (j + 1) * offset;
             const yPosition = yScales[dimension](averageData.get(type)[dimension]);
-            return [xPosition, yPosition];
+            const type2 = type;
+            return [xPosition, yPosition, type2];
         });
 
         const tooltip = dimensions.map(stat => {
@@ -208,28 +208,27 @@ function createParallelCoordinatesPlot(data) {
             const lineGenerator = d3.line();
             svg.append("path")
                 .datum(lineData)
-                .attr("class", "line")
+                .attr("class", "line_type")
                 .attr("d", lineGenerator)
                 .attr("item", type)
                 .style("stroke", typeColors[type]) // Adjust the line color
                 .style("fill", "none")
+                .attr('opacity', 1.1)
                 .style("stroke-width", 2) // Adjust the line width
-                .on("click", function () {
-                    handleMouseClick(type);
-                })
+                .on("click", handleOpacityLines)
                 .append("title")
                 .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
 
             svg.append("circle")
+                .attr("class", "pc_circle")
                 .attr("cx", xPosition)
                 .attr("cy", yPosition)
                 .attr("r", 6) // Adjust the radius of the circle
                 .attr("item", type)
                 .style("fill", typeColors[type]) // Adjust the fill color
+                .attr('opacity', 1.1)
                 .attr('stroke-width', 1)
-                .on("click", function () {
-                    handleMouseClick(type);
-                })
+                .on("click", handleOpacityLines)
                 .append("title")
                 .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
         });
