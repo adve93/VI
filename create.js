@@ -14,7 +14,6 @@ function createBubbleChart(data) {
 
   // Calculate the Pearson correlation coefficient (r) for your data
   const correlationCoefficient = calculatePearsonCorrelation(averageData);
-  console.log(correlationCoefficient);
 
   //Selecting HTML element and appeding svg element
   const svg = d3.select("#bubbleChart")
@@ -50,9 +49,13 @@ function createBubbleChart(data) {
       .attr("cx", d => xScale(d[1].averageBaseEggSteps))
       .attr("cy", d => yScale(d[1].averageHeight))
       .attr("r", d => rScale(d[1].averageWeight))
+      .attr("item", d => d[1].type)
       .attr("fill", d => typeColors[d[1].type])
       .attr('stroke-width',1)
       .attr("stroke", "black")
+      .on("click", function (event, d) {
+          handleMouseClick(d[1].type);
+      })
       .append("title")
       .text( d =>
           `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
@@ -193,13 +196,6 @@ function createParallelCoordinatesPlot(data) {
 
         // Use D3 to draw the line connecting the points
         const lineGenerator = d3.line();
-        svg.append("path")
-            .datum(lineData)
-            .attr("class", "line")
-            .attr("d", lineGenerator)
-            .style("stroke", typeColors[type]) // Adjust the line color
-            .style("fill", "none")
-            .style("stroke-width", 2); // Adjust the line width
 
         // Create points
         dimensions.forEach((dimension, j) => {
@@ -211,9 +207,13 @@ function createParallelCoordinatesPlot(data) {
                 .datum(lineData)
                 .attr("class", "line")
                 .attr("d", lineGenerator)
+                .attr("item", type)
                 .style("stroke", typeColors[type]) // Adjust the line color
                 .style("fill", "none")
                 .style("stroke-width", 2) // Adjust the line width
+                .on("click", function () {
+                    handleMouseClick(type);
+                })
                 .append("title")
                 .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
 
@@ -221,15 +221,16 @@ function createParallelCoordinatesPlot(data) {
                 .attr("cx", xPosition)
                 .attr("cy", yPosition)
                 .attr("r", 6) // Adjust the radius of the circle
+                .attr("item", type)
                 .style("fill", typeColors[type]) // Adjust the fill color
                 .attr('stroke-width', 1)
+                .on("click", function () {
+                    handleMouseClick(type);
+                })
                 .append("title")
                 .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
         });
     });
-
-    
-
 }
 
 // Function to calculate Pearson correlation coefficient
@@ -301,8 +302,7 @@ function createPieChart(data) {
         .text(d => `${d.data[1].toFixed(2)}%`);
 
 
-    svg
-        .selectAll('slices')
+    svg.selectAll('slices')
         .data(data_ready)
         .enter()
         .append('text')

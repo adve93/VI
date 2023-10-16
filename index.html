@@ -17,20 +17,34 @@
                 padding: 10px;
             }
 
+            #bubbleChart {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+            }
+
             #parallelCoordinatesPlot {
                 position: fixed;
                 bottom: 10px;
                 right: 10px;
+            }
+
+            #pieChart {
+                position: fixed;
+                bottom: 25px;
+                left: 680px;
             }
         </style>
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
         <script src="create.js"></script>
         <script src="script.js"></script>
+        <script src="linked.js"></script>
     </head>
     <body onload="startDashboard()" >  <!-- style="background-image: url('background.jpg');" -->
         <div class="dashboard">
             <div class="visualization" id="bubbleChart"></div>
+            <div class="visualization" id="pieChart"></div>
             <div class="visualization" id="parallelCoordinatesPlot"></div>
         </div>
         
