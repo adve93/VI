@@ -3,6 +3,14 @@
     <head>
         <title>Projeto VI</title>
         <style>
+            body{
+                background-image: url('background3.jpg');
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-attachment: fixed; /* Optional: To prevent scrolling with the page content */
+                margin: 0; /* Remove default body margin */
+                padding: 0;
+            }
             .container {
                 display: flex;
             }
@@ -20,19 +28,19 @@
             #bubbleChart {
                 position: fixed;
                 top: 10px;
-                left: 760px;
+                right: 60px;
             }
 
             #parallelCoordinatesPlot {
                 position: fixed;
                 bottom: 10px;
-                left: 800px;
+                right: 0px;
             }
 
             #pieChart {
                 position: fixed;
-                bottom: 25px;
-                left: 550px;
+                bottom: 30px;
+                right: 800px;
             }
         </style>
         <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -42,7 +50,7 @@
         <script src="linked.js"></script>
         <script src="update.js"></script>
     </head>
-    <body onload="startDashboard()" style="background-image: url('background3.jpg');" >
+    <body onload="startDashboard()" >
         <div class="dashboard">
             <div class="visualization" id="bubbleChart"></div>
             <div class="visualization" id="pieChart"></div>
