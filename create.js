@@ -1,38 +1,20 @@
-//Function to create a bar chart
+//Function to create a bubble chart
 function createBubbleChart(data) {
 
   //Calculate average values for height_m and base_egg_steps by type
   const averageData = d3.rollup(data, 
       group => ({
           averageHeight: d3.mean(group, d => d.height_m),
-          averageBaseEggSteps: d3.mean(group, d => d.base_egg_steps),
+          averageBaseEggSteps: Math.round(d3.mean(group, d => d.base_egg_steps)),
           type: group[0].type1,
-          typeLength: group.length
+          averageWeight: d3.mean(group, d => d.weight_kg)
       }), 
       d => d.type1
   );
 
-  //Color scale for types
-  const typeColors = {
-      "normal": "#A8A77A",
-      "fire": "#EE8130",
-      "water": "#6390F0",
-      "electric": "#F7D02C",
-      "grass": "#7AC74C",
-      "ice": "#96D9D6",
-      "fighting": "#C22E28",
-      "poison": "#A33EA1",
-      "ground": "#E2BF65",
-      "flying": "#A98FF3",
-      "psychic": "#F95587",
-      "bug": "#A6B91A",
-      "rock": "#B6A136",
-      "ghost": "#735797",
-      "steel": "#B7B7CE",
-      "dragon": "#6F35FC",
-      "dark": "#705746",
-      "fairy": "#D685AD"
-  };
+  // Calculate the Pearson correlation coefficient (r) for your data
+  const correlationCoefficient = calculatePearsonCorrelation(averageData);
+  console.log(correlationCoefficient);
 
   //Selecting HTML element and appeding svg element
   const svg = d3.select("#bubbleChart")
@@ -51,6 +33,14 @@ function createBubbleChart(data) {
       .domain([0, d3.max(averageData.values(), d => d.averageHeight)])
       .range([height - margin.bottom, margin.top]);
 
+    const rScale = d3.scaleLinear()
+        .domain([d3.min(averageData.values(), d => d.averageWeight), d3.max(averageData.values(), d => d.averageWeight)])
+        .range([10, 20]);
+
+    const correlationLine = d3.line()
+        .x(d => xScale(d.averageBaseEggSteps))  // Use xScale for x-coordinate
+        .y(d => yScale(correlationCoefficient * d.averageBaseEggSteps)) // Adjusted for y-coordinate
+
   //Add circles to the scatter plot representing each country
   svg.selectAll(".circle")
       .data(averageData)
@@ -59,14 +49,25 @@ function createBubbleChart(data) {
       .attr("class", "circle data")
       .attr("cx", d => xScale(d[1].averageBaseEggSteps))
       .attr("cy", d => yScale(d[1].averageHeight))
-      .attr("r", d => Math.sqrt(d[1].typeLength))
+      .attr("r", d => rScale(d[1].averageWeight))
       .attr("fill", d => typeColors[d[1].type])
       .attr('stroke-width',1)
       .attr("stroke", "black")
       .append("title")
       .text( d =>
-          `Type: ${d[1].type}\nN Pokemon: ${d[1].typeLength}\nAverage Steps:${Math.round(d[1].averageBaseEggSteps)}\nAverage Height:${Math.round(d[1].averageHeight*10)/10}`
+          `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
       );
+
+    // Add a Pearson correlation line
+    svg.append("line")
+        .attr("x1", xScale(d3.min(averageData, d => d[1].averageBaseEggSteps)))
+        .attr("y1", yScale(d3.min(averageData, d => d[1].averageHeight)))
+        .attr("x2", xScale(d3.max(averageData, d => d[1].averageBaseEggSteps)))
+        .attr("y2", yScale(d3.max(averageData, d => d[1].averageHeight)))
+        .style("stroke", "black")
+        .style("stroke-width", 2)
+        .append("title")
+        .text(`Pearson Correlation: ${Math.round(correlationCoefficient*1000)/1000}`)
 
 
   //Add axes
@@ -99,4 +100,155 @@ function createBubbleChart(data) {
     .attr("transform", "rotate(-90)")
     .text("Height by type");
 
+}
+
+//Function to create a parallel coordinates plot
+function createParallelCoordinatesPlot(data) {
+
+    const width2 = 800 - margin.left - margin.right;
+    const height2 = 500 - margin.top - margin.bottom;
+
+    //Calculate average values for fighting stats
+    const averageData = d3.rollup(data,
+        group => ({
+            Attack: d3.mean(group, d => d.attack).toFixed(2),
+            SpAttack: d3.mean(group, d => d.sp_attack).toFixed(2),
+            Defense: d3.mean(group, d => d.defense).toFixed(2),
+            SpDefense: d3.mean(group, d => d.sp_defense).toFixed(2),
+            HP: d3.mean(group, d => d.hp).toFixed(2),
+            Speed: d3.mean(group, d => d.speed).toFixed(2),
+            type: group[0].type1,
+        }),
+        d => d.type1
+    );
+
+
+    //Selecting HTML element and appeding svg element
+    const svg = d3.select("#parallelCoordinatesPlot")
+        .append("svg")
+        .attr("width", width2 + margin.left + margin.right)
+        .attr("height", height2 + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const dimensions = ["Attack", "SpAttack", "Defense", "SpDefense", "HP", "Speed"];
+
+
+    const yTickValues = [40, 60, 80, 100, 120, 140];
+
+    // Define the x-scale for the types
+    const xScale = d3.scalePoint()
+        .domain(Object.keys(averageData))
+        .range([0, width]);
+
+    const yScales = {
+        Attack: d3.scaleLinear().domain([40, 140]).range([height2, 0]),
+        SpAttack: d3.scaleLinear().domain([40, 140]).range([height2, 0]),
+        Defense: d3.scaleLinear().domain([40, 140]).range([height2, 0]),
+        SpDefense: d3.scaleLinear().domain([40, 140]).range([height2, 0]),
+        HP: d3.scaleLinear().domain([40, 140]).range([height2, 0]),
+        Speed: d3.scaleLinear().domain([40, 140]).range([height2, 0])
+    };
+
+    // Create a single shared scale for all axes
+    const scale = d3.scaleLinear().domain([40, 140]).range([height2, 0]);
+
+    const offset = width2 / (dimensions.length + 1);
+
+    // Add a single scale before all axes
+    svg.append("g")
+        .attr("class", "scale-axis")
+        .call(d3.axisLeft(scale).tickValues(yTickValues));
+
+    // Add vertical axes for the selected dimensions with a fixed separation
+    dimensions.forEach((dimension, i) => {
+        const xPosition = (i + 1) * offset; // Add 1 to the index to account for the first axis
+        svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(${xPosition},0)`)
+            .call(d3.axisLeft(yScales[dimension]).tickValues([]));
+
+        // Add the axis label
+        svg.append("text")
+            .attr("x", xPosition)
+            .attr("y", height2 + 20) // Adjust the vertical position of the label
+            .style("text-anchor", "middle")
+            .text(dimension);
+    });
+
+
+    averageData.forEach((d, i) => {
+        const type = d.type;
+
+        // Initialize an array to store the coordinates of the line
+        const lineData = dimensions.map((dimension, j) => {
+            const xPosition = (j + 1) * offset;
+            const yPosition = yScales[dimension](averageData.get(type)[dimension]);
+            return [xPosition, yPosition];
+        });
+
+        const tooltip = dimensions.map(stat => {
+            return `${stat}: ${averageData.get(type)[stat]}`;
+        });
+
+        // Use D3 to draw the line connecting the points
+        const lineGenerator = d3.line();
+        svg.append("path")
+            .datum(lineData)
+            .attr("class", "line")
+            .attr("d", lineGenerator)
+            .style("stroke", typeColors[type]) // Adjust the line color
+            .style("fill", "none")
+            .style("stroke-width", 2); // Adjust the line width
+
+        // Create points
+        dimensions.forEach((dimension, j) => {
+            const xPosition = (j + 1) * offset;
+            const yPosition = yScales[dimension](averageData.get(type)[dimension]);
+
+            const lineGenerator = d3.line();
+            svg.append("path")
+                .datum(lineData)
+                .attr("class", "line")
+                .attr("d", lineGenerator)
+                .style("stroke", typeColors[type]) // Adjust the line color
+                .style("fill", "none")
+                .style("stroke-width", 2) // Adjust the line width
+                .append("title")
+                .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
+
+            svg.append("circle")
+                .attr("cx", xPosition)
+                .attr("cy", yPosition)
+                .attr("r", 6) // Adjust the radius of the circle
+                .style("fill", typeColors[type]) // Adjust the fill color
+                .attr('stroke-width', 1)
+                .append("title")
+                .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
+        });
+    });
+
+    
+
+}
+
+// Function to calculate Pearson correlation coefficient
+function calculatePearsonCorrelation(data) {
+    const xMean = d3.mean(data.values(), d => d.averageBaseEggSteps);
+    const yMean = d3.mean(data.values(), d => d.averageHeight);
+
+    let numerator = 0;
+    let denominatorX = 0;
+    let denominatorY = 0;
+
+    data.forEach(d => {
+        const xDiff = d.averageBaseEggSteps - xMean;
+        const yDiff = d.averageHeight - yMean;
+        numerator += xDiff * yDiff;
+        denominatorX += xDiff ** 2;
+        denominatorY += yDiff ** 2;
+    });
+    
+    const r = numerator / Math.sqrt(denominatorX * denominatorY);
+    return r;
 }
