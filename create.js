@@ -1,36 +1,39 @@
 //Function to create a bubble chart
 function createBubbleChart(data) {
 
-  //Calculate average values for height_m and base_egg_steps by type
-  const averageData = d3.rollup(data, 
-      group => ({
-          averageHeight: d3.mean(group, d => d.height_m),
-          averageBaseEggSteps: Math.round(d3.mean(group, d => d.base_egg_steps)),
-          type: group[0].type1,
-          averageWeight: d3.mean(group, d => d.weight_kg)
-      }), 
-      d => d.type1
-  );
+    const width = 750 - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
 
-  // Calculate the Pearson correlation coefficient (r) for your data
-  const correlationCoefficient = calculatePearsonCorrelation(averageData);
+    //Calculate average values for height_m and base_egg_steps by type
+    const averageData = d3.rollup(data, 
+        group => ({
+            averageHeight: d3.mean(group, d => d.height_m),
+            averageBaseEggSteps: Math.round(d3.mean(group, d => d.base_egg_steps)),
+            type: group[0].type1,
+            averageWeight: d3.mean(group, d => d.weight_kg)
+        }), 
+        d => d.type1
+    );
 
-  //Selecting HTML element and appeding svg element
-  const svg = d3.select("#bubbleChart")
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
+    // Calculate the Pearson correlation coefficient (r) for your data
+    const correlationCoefficient = calculatePearsonCorrelation(averageData);
 
-  //Define scales for x and y
-  const xScale = d3.scaleLinear()
-      .domain([0, d3.max(averageData.values(), d => d.averageBaseEggSteps)])
-      .range([margin.left, width - margin.right]);
+    //Selecting HTML element and appeding svg element
+    const svg = d3.select("#bubbleChart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height  + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  const yScale = d3.scaleLinear()
-      .domain([0, d3.max(averageData.values(), d => d.averageHeight)])
-      .range([height - margin.bottom, margin.top]);
+    //Define scales for x and y
+    const xScale = d3.scaleLinear()
+        .domain([0, d3.max(averageData.values(), d => d.averageBaseEggSteps)])
+        .range([margin.left, width - margin.right]);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, d3.max(averageData.values(), d => d.averageHeight)])
+        .range([height - margin.bottom, margin.top]);
 
     const rScale = d3.scaleLinear()
         .domain([d3.min(averageData.values(), d => d.averageWeight), d3.max(averageData.values(), d => d.averageWeight)])
@@ -40,26 +43,26 @@ function createBubbleChart(data) {
         .x(d => xScale(d.averageBaseEggSteps))  // Use xScale for x-coordinate
         .y(d => yScale(correlationCoefficient * d.averageBaseEggSteps)) // Adjusted for y-coordinate
 
-  //Add circles to the scatter plot representing each country
-  svg.selectAll(".circle")
-      .data(averageData)
-      .enter()
-      .append("circle")
-      .attr("class", "circle data")
-      .attr("cx", d => xScale(d[1].averageBaseEggSteps))
-      .attr("cy", d => yScale(d[1].averageHeight))
-      .attr("r", d => rScale(d[1].averageWeight))
-      .attr("item", d => d[1].type)
-      .attr("fill", d => typeColors[d[1].type])
-      .attr('stroke-width',1)
-      .attr("stroke", "black")
-      .on("click", function (event, d) {
-          handleMouseClick(d[1].type);
-      })
-      .append("title")
-      .text( d =>
-          `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
-      );
+    //Add circles to the scatter plot representing each country
+    svg.selectAll(".circle")
+        .data(averageData)
+        .enter()
+        .append("circle")
+        .attr("class", "circle data")
+        .attr("cx", d => xScale(d[1].averageBaseEggSteps))
+        .attr("cy", d => yScale(d[1].averageHeight))
+        .attr("r", d => rScale(d[1].averageWeight))
+        .attr("item", d => d[1].type)
+        .attr("fill", d => typeColors[d[1].type])
+        .attr('stroke-width',1)
+        .attr("stroke", "black")
+        .on("click", function (event, d) {
+            handleMouseClick(d[1].type);
+        })
+        .append("title")
+        .text( d =>
+            `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
+        );
 
     // Add a Pearson correlation line
     svg.append("line")
@@ -73,43 +76,43 @@ function createBubbleChart(data) {
         .text(`Pearson Correlation: ${Math.round(correlationCoefficient*1000)/1000}`)
 
 
-  //Add axes
-  const xAxis = d3.axisBottom(xScale);
-  const yAxis = d3.axisLeft(yScale);
+    //Add axes
+    const xAxis = d3.axisBottom(xScale);
+    const yAxis = d3.axisLeft(yScale);
 
-  svg.append("g")
-      .attr("transform", `translate(0, ${height - margin.bottom})`)
-      .call(xAxis);
+    svg.append("g")
+        .attr("transform", `translate(0, ${height - margin.bottom})`)
+        .call(xAxis);
 
-  svg.append("g")
-      .attr("transform", `translate(${margin.left}, 0)`)
-      .call(yAxis);
+    svg.append("g")
+        .attr("transform", `translate(${margin.left}, 0)`)
+        .call(yAxis);
 
-  //Label the axes
-  svg
-    .append("text")
-    .attr("class", "x-axis-label")
-    .attr("x", width / 2)
-    .attr("y", height + margin.top - 20)
-    .style("text-anchor", "middle")
-    .text("Steps by type");
+    //Label the axes
+    svg
+        .append("text")
+        .attr("class", "x-axis-label")
+        .attr("x", width / 2)
+        .attr("y", height + margin.top - 20)
+        .style("text-anchor", "middle")
+        .text("Steps by type");
 
-  svg
-    .append("text")
-    .attr("class", "y-axis-label")
-    .attr("x", -height / 2)
-    .attr("y", -margin.left + 40)
-    .style("text-anchor", "middle")
-    .attr("transform", "rotate(-90)")
-    .text("Height by type");
+    svg
+        .append("text")
+        .attr("class", "y-axis-label")
+        .attr("x", -height / 2)
+        .attr("y", -margin.left + 40)
+        .style("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
+        .text("Height by type");
 
-}
+    }
 
 //Function to create a parallel coordinates plot
 function createParallelCoordinatesPlot(data) {
 
-    const width2 = 800 - margin.left - margin.right;
-    const height2 = 500 - margin.top - margin.bottom;
+    const width = 800 - margin.left - margin.right;
+    const height = 350 - margin.top - margin.bottom;
 
     //Calculate average values for fighting stats
     const averageData = d3.rollup(data,
@@ -129,8 +132,8 @@ function createParallelCoordinatesPlot(data) {
     //Selecting HTML element and appeding svg element
     const svg = d3.select("#parallelCoordinatesPlot")
         .append("svg")
-        .attr("width", width2 + margin.left + margin.right)
-        .attr("height", height2 + margin.top + margin.bottom)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -145,18 +148,18 @@ function createParallelCoordinatesPlot(data) {
         .range([0, width]);
 
     const yScales = {
-        Attack: d3.scaleLinear().domain([40, 140]).range([height2, 0]),
-        SpAttack: d3.scaleLinear().domain([40, 140]).range([height2, 0]),
-        Defense: d3.scaleLinear().domain([40, 140]).range([height2, 0]),
-        SpDefense: d3.scaleLinear().domain([40, 140]).range([height2, 0]),
-        HP: d3.scaleLinear().domain([40, 140]).range([height2, 0]),
-        Speed: d3.scaleLinear().domain([40, 140]).range([height2, 0])
+        Attack: d3.scaleLinear().domain([40, 140]).range([height, 0]),
+        SpAttack: d3.scaleLinear().domain([40, 140]).range([height, 0]),
+        Defense: d3.scaleLinear().domain([40, 140]).range([height, 0]),
+        SpDefense: d3.scaleLinear().domain([40, 140]).range([height, 0]),
+        HP: d3.scaleLinear().domain([40, 140]).range([height, 0]),
+        Speed: d3.scaleLinear().domain([40, 140]).range([height, 0])
     };
 
     // Create a single shared scale for all axes
-    const scale = d3.scaleLinear().domain([40, 140]).range([height2, 0]);
+    const scale = d3.scaleLinear().domain([40, 140]).range([height, 0]);
 
-    const offset = width2 / (dimensions.length + 1);
+    const offset = width / (dimensions.length + 1);
 
     // Add a single scale before all axes
     svg.append("g")
@@ -174,7 +177,7 @@ function createParallelCoordinatesPlot(data) {
         // Add the axis label
         svg.append("text")
             .attr("x", xPosition)
-            .attr("y", height2 + 20) // Adjust the vertical position of the label
+            .attr("y", height + 20) // Adjust the vertical position of the label
             .style("text-anchor", "middle")
             .text(dimension);
     });
@@ -256,23 +259,23 @@ function calculatePearsonCorrelation(data) {
 
 function createPieChart(data) {
 
-    const width2 = 300;
-    const height2 = 350;
 
+    const width = 350 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
 
     const male_average = d3.mean(data, d => d.percentage_male);
     const female_average = 100 - male_average;
 
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-    const radius = Math.min(width2, height2) / 2 - 40;
+    const radius = Math.min(width, height) / 2 - 40;
 
     // append the svg object to the div called 'my_dataviz'
     const svg = d3.select("#pieChart")
         .append("svg")
-        .attr("width", width2)
-        .attr("height", height2)
+        .attr("width", width)
+        .attr("height", height)
         .append("g")
-        .attr("transform", `translate(${width2 / 2}, ${height2 / 2})`);
+        .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
     // set the color scale
     const color = d3.scaleOrdinal()
