@@ -58,6 +58,7 @@ function createBubbleChart(data) {
         .attr("stroke", "black")
         .attr('opacity', 1.1)
         .on("click", handleOpacityCircle)
+        .on("mouseover", handleMouseOverCircle)
         .append("title")
         .text( d =>
             `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
@@ -81,11 +82,22 @@ function createBubbleChart(data) {
 
     svg.append("g")
         .attr("transform", `translate(0, ${height - margin.bottom})`)
-        .call(xAxis);
+        .call(xAxis)
+        .call(
+            d3
+              .axisBottom(xScale)
+              .tickFormat((d) => d3.format(".1f")(d / 1000) + "K")
+              .tickSizeOuter(0)
+          );
 
     svg.append("g")
         .attr("transform", `translate(${margin.left}, 0)`)
-        .call(yAxis);
+        .call(yAxis)
+        .call(
+            d3
+              .axisLeft(yScale)
+              .tickFormat((d) => d + "m")
+          );
 
     //Label the axes
     svg
@@ -94,7 +106,7 @@ function createBubbleChart(data) {
         .attr("x", width / 2)
         .attr("y", height + margin.top - 20)
         .style("text-anchor", "middle")
-        .text("Steps by type");
+        .text("Steps");
 
     svg
         .append("text")
@@ -103,7 +115,7 @@ function createBubbleChart(data) {
         .attr("y", -margin.left + 40)
         .style("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
-        .text("Height by type");
+        .text("Height");
 
     }
 

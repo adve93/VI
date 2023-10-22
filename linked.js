@@ -90,3 +90,25 @@ function handleOpacityLines(event, item) {
 
 
 }
+
+function handleMouseOverCircle(event, item) {
+
+    //Select all elements with the class "circle_type" using D3.js
+    const allCircles = d3.selectAll(".circle_type");
+
+    //Select all elements with the class "line_type" using D3.js
+    const allLines = d3.selectAll(".line_type");
+
+    //Save the clickedCircle
+    const clickedCircle = allCircles.filter(function (d) {
+        return item[1].type === d[1].type;
+        });
+    
+    const clickedLine = allLines.filter(function (d) {
+        return item[1].type === d[0][2];
+        });
+
+    clickedCircle.attr("fill", "red");
+    clickedLine.style("stroke", "red");
+
+}
