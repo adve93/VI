@@ -1,3 +1,5 @@
+var selected = "";
+
 function handleOpacityCircle(event, item) {
 
     //Select all elements with the class "circle_type" using D3.js
@@ -16,10 +18,14 @@ function handleOpacityCircle(event, item) {
         });
     
     if(clickedCircle.attr('opacity') == 1) {
+        unselecting(clickedCircle.attr("type"));
+
         allCircles.attr('opacity', 1.1);
         allLines.attr('opacity', 1.1)
                 .attr('stroke-width', 1);
     } else {
+        selecting(clickedCircle.attr("type"));
+
         //Filter and change the opacity for non-selected circles
         allCircles.filter(function (d) {
             return item[1].type !== d[1].type;
@@ -62,10 +68,14 @@ function handleOpacityLines(event, item) {
         });
     
     if(clickedCircle.attr('opacity') == 1) {
+        unselecting(clickedCircle.attr("type"));
+
         allCircles.attr('opacity', 1.1);
         allLines.attr('opacity', 1.1)
                 .attr('stroke-width', 1);
     } else {
+        selecting(clickedCircle.attr("type"));
+
         //Filter and change the opacity for non-selected circles
         allCircles.filter(function (d) {
             return item[0][2] !== d[1].type;
@@ -89,4 +99,16 @@ function handleOpacityLines(event, item) {
     } 
 
 
+}
+
+function unselecting(type) {
+    console.log("Unselecting... " + type);
+    selected = "";
+    updatePieChart("overview");
+}
+
+function selecting(type) {
+    console.log("Selecting... " + type);
+    selected = type;
+    updatePieChart(type);
 }

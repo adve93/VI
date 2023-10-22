@@ -52,7 +52,7 @@ function createBubbleChart(data) {
         .attr("cx", d => xScale(d[1].averageBaseEggSteps))
         .attr("cy", d => yScale(d[1].averageHeight))
         .attr("r", d => rScale(d[1].averageWeight))
-        .attr("item", d => d[1].type)
+        .attr("type", d => d[1].type)
         .attr("fill", d => typeColors[d[1].type])
         .attr('stroke-width',1)
         .attr("stroke", "black")
@@ -210,7 +210,7 @@ function createParallelCoordinatesPlot(data) {
                 .datum(lineData)
                 .attr("class", "line_type")
                 .attr("d", lineGenerator)
-                .attr("item", type)
+                .attr("type", dimension.type)
                 .style("stroke", typeColors[type]) // Adjust the line color
                 .style("fill", "none")
                 .attr('opacity', 1.1)
@@ -224,7 +224,7 @@ function createParallelCoordinatesPlot(data) {
                 .attr("cx", xPosition)
                 .attr("cy", yPosition)
                 .attr("r", 6) // Adjust the radius of the circle
-                .attr("item", type)
+                .attr("type", dimension.type)
                 .style("fill", typeColors[type]) // Adjust the fill color
                 .attr('opacity', 1.1)
                 .attr('stroke-width', 1)
@@ -259,59 +259,59 @@ function calculatePearsonCorrelation(data) {
 function createPieChart(data) {
 
 
-    const width = 350 - margin.left - margin.right;
-    const height = 300 - margin.top - margin.bottom;
+    const width2 = 350 - margin.left - margin.right;
+    const height2 = 300 - margin.top - margin.bottom;
 
     const male_average = d3.mean(data, d => d.percentage_male);
     const female_average = 100 - male_average;
 
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-    const radius = Math.min(width, height) / 2 - 40;
+    const radius = Math.min(width2, height2) / 2 - 40;
 
     // append the svg object to the div called 'my_dataviz'
     const svg = d3.select("#pieChart")
         .append("svg")
-        .attr("width", width)
-        .attr("height", height)
+        .attr("width", width2)
+        .attr("height", height2)
         .append("g")
-        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+        .attr("transform", `translate(${width2 / 2}, ${height2 / 2})`);
 
-    // set the color scale
-    const color = d3.scaleOrdinal()
-        .range(["#5888B4", "#D3469D"])
+    const avg = { Male: male_average, Female: female_average };
 
-    // Compute the position of each group on the pie:
-    const pie = d3.pie()
-        .value(function (d) { return d[1] })
-    const data_ready = pie(Object.entries({ Male: male_average, Female: female_average }))
-
-    const arcGenerator = d3.arc()
+    var arcGenerator = d3.arc()
         .innerRadius(0)
         .outerRadius(radius);
 
-    svg.selectAll('slices')
-        .data(data_ready)
-        .join('path')
-        .attr('d', d3.arc()
-            .innerRadius(0)
-            .outerRadius(radius)
-        )
-        .attr('fill', (d, i) => color(i))
-        .attr("stroke", "black")
+    // Compute the position of each group on the pie:
+    const pie = d3.pie()
+        .value(function (d) { return d[1]; })
+        .sort(function (a, b) { return d3.ascending(a.key, b.key); }) // This make sure that group order remains the same in the pie chart
+
+    const data_ready = pie(Object.entries(avg))
+
+    // map to data
+    const chart = svg.selectAll("path")
+        .data(data_ready);
+
+    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+    chart.join('path')
+        .attr('d', arcGenerator)
+        .attr("class", "slice")
+        .attr('fill', d => genderColors[d.data[0]])
+        .attr("stroke", "white")
         .style("stroke-width", "2px")
-        .style("opacity", 0.7)
+        .style("opacity", 1)
         .append("title")
         .text(d => `${d.data[1].toFixed(2)}%`);
 
 
     // Labels
-    svg.selectAll('slices')
-        .data(data_ready)
-        .enter()
+    chart.enter()
         .append('text')
         .text(function (d) { return d.data[0] })
-        .attr("transform", function (d) { return "translate(" + arcGenerator.centroid(d) + ")"; })
+        .attr("transform", function (d) {
+            return "translate(" + arcGenerator.centroid(d) + ")"; })
         .style("text-anchor", "middle")
-        .style("font-size", 17)
+        .style("font-size", 17);
 
 }

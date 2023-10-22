@@ -11,6 +11,11 @@ const margin = {
 const width = 600 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
 
+const genderColors = {
+    "Male": "#5888B4",
+    "Female": "#D3469D"
+}
+
 //Color scale for types
 const typeColors = {
     "normal": "#A8A77A",
