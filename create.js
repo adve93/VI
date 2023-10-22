@@ -57,8 +57,9 @@ function createBubbleChart(data) {
         .attr('stroke-width',1)
         .attr("stroke", "black")
         .attr('opacity', 1.1)
-        .on("click", handleOpacityCircle)
-        .on("mouseover", handleMouseOverCircle)
+        .on("click", handleTypeClick)
+        .on("mouseover", handleMouseOverType)
+        .on("mouseout", handleMouseOutType)
         .append("title")
         .text( d =>
             `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
@@ -227,7 +228,9 @@ function createParallelCoordinatesPlot(data) {
                 .style("fill", "none")
                 .attr('opacity', 1.1)
                 .style("stroke-width", 2) // Adjust the line width
-                .on("click",handleOpacityLines)
+                .on("click",handleTypeClick)
+                .on("mouseover", handleMouseOverType)
+                .on("mouseout", handleMouseOutType)
                 .append("title")
                 .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
 
@@ -240,7 +243,7 @@ function createParallelCoordinatesPlot(data) {
                 .style("fill", typeColors[type]) // Adjust the fill color
                 .attr('opacity', 1.1)
                 .attr('stroke-width', 1)
-                .on("click", handleOpacityLines)
+                .on("click", handleTypeClick)
                 .append("title")
                 .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
         });

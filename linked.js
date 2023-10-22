@@ -1,114 +1,168 @@
-function handleOpacityCircle(event, item) {
+// Create an empty Map
+const selected = new Map();
 
-    //Select all elements with the class "circle_type" using D3.js
+// Add temp pairs to the Map
+selected.set("type", "");
+selected.set("sex", "");
+selected.set("generation", -1);
+
+function handleTypeClick(event, item) {
+
+    //Initialize variables
+    var clickedCircle;
+    var clickedLine;
+    var typeTemp;
+
+    //Select all circles
     const allCircles = d3.selectAll(".circle_type");
 
-    //Select all elements with the class "line_type" using D3.js
+    //Select all lines
     const allLines = d3.selectAll(".line_type");
 
-    //Save the clickedCircle
-    const clickedCircle = allCircles.filter(function (d) {
-        return item[1].type === d[1].type;
-        });
+    //Save the clickedCircle and clickedLine
+    if(item[1].type != null) {
+        selected.set("type", item[1].type);
+        typeTemp = item[1].type;
+       
+        clickedCircle = allCircles.filter(function (d) {
+            return typeTemp === d[1].type;
+            });
+        
+        clickedLine = allLines.filter(function (d) {
+            return typeTemp === d[0][2];
+            });
+
+    } else {
+        selected.set("type", item[0][2]);
+        typeTemp = item[0][2];
+
+        clickedCircle = allCircles.filter(function (d) {
+            return typeTemp === d[1].type;
+            });
+        
+        clickedLine = allLines.filter(function (d) {
+            return typeTemp === d[0][2];
+            });
+    }
     
-    const clickedLine = allLines.filter(function (d) {
-        return item[1].type === d[0][2];
-        });
-    
+    //Check to see if type was already selected
     if(clickedCircle.attr('opacity') == 1) {
+
+        //Deselect type
+        selected.set("type", "");
         allCircles.attr('opacity', 1.1);
         allLines.attr('opacity', 1.1)
                 .attr('stroke-width', 1);
+
     } else {
-        //Filter and change the opacity for non-selected circles
+
+        //Select type
         allCircles.filter(function (d) {
-            return item[1].type !== d[1].type;
+            return typeTemp !== d[1].type;
             })
             .attr('opacity', 0.3);
         
-        //Filter and change the opacity for non-selected lines
         allLines.filter(function (d) {
-            return item[1].type !== d[0][2];
+            return typeTemp !== d[0][2];
             })
             .attr('opacity', 0.02)
             .attr('stroke-width', 0.2);
 
-        //Change the opacity for the selected circle
         clickedCircle.attr('opacity', 1)
         .raise();
 
-        //Change the opacity for the selected circle
         clickedLine.attr('opacity', 1)
         .raise();
     } 
 
+    updatePieChart();
+
 }
 
-function handleOpacityLines(event, item) {
+function handleMouseOverType(event, item) {
 
-    //Select all elements with the class "circle_type" using D3.js
+    //Initialize variables
+    var clickedCircle;
+    var clickedLine;
+    var typeTemp;
+
+    //Select all circles
     const allCircles = d3.selectAll(".circle_type");
 
-    //Select all elements with the class "line_type" using D3.js
+    //Select all lines
     const allLines = d3.selectAll(".line_type");
 
-    //Save the clickedCircle
-    const clickedCircle = allCircles.filter(function (d) {
-        return item[0][2] === d[1].type;
-        });
-    
-    const clickedLine = allLines.filter(function (d) {
-        return item[0][2] === d[0][2];
-        });
-    
-    if(clickedCircle.attr('opacity') == 1) {
-        allCircles.attr('opacity', 1.1);
-        allLines.attr('opacity', 1.1)
-                .attr('stroke-width', 1);
-    } else {
-        //Filter and change the opacity for non-selected circles
-        allCircles.filter(function (d) {
-            return item[0][2] !== d[1].type;
-            })
-            .attr('opacity', 0.3);
+    //Save the clickedCircle and clickedLine
+    if(item[1].type != null) {
         
-        //Filter and change the opacity for non-selected lines
-        allLines.filter(function (d) {
-            return item[0][2] !== d[0][2];
-            })
-            .attr('opacity', 0.02)
-            .attr('stroke-width', 0.2);
+        typeTemp = item[1].type;
+        clickedCircle = allCircles.filter(function (d) {
+            return item[1].type === d[1].type;
+            });
+        
+        clickedLine = allLines.filter(function (d) {
+            return item[1].type === d[0][2];
+            });
 
-        //Change the opacity for the selected circle
-        clickedCircle.attr('opacity', 1)
-        .raise();
+    } else {
 
-        //Change the opacity for the selected circle
-        clickedLine.attr('opacity', 1)
-        .raise();
-    } 
-
-
-}
-
-function handleMouseOverCircle(event, item) {
-
-    //Select all elements with the class "circle_type" using D3.js
-    const allCircles = d3.selectAll(".circle_type");
-
-    //Select all elements with the class "line_type" using D3.js
-    const allLines = d3.selectAll(".line_type");
-
-    //Save the clickedCircle
-    const clickedCircle = allCircles.filter(function (d) {
-        return item[1].type === d[1].type;
-        });
-    
-    const clickedLine = allLines.filter(function (d) {
-        return item[1].type === d[0][2];
+        typeTemp = item[0][2];
+        clickedCircle = allCircles.filter(function (d) {
+            return item[0][2] === d[1].type;
+            });
+        
+        clickedLine = allLines.filter(function (d) {
+            return item[0][2] === d[0][2];
         });
 
+    }
+
+    //Mark circle and line has overed
     clickedCircle.attr("fill", "red");
     clickedLine.style("stroke", "red");
+
+}
+
+function handleMouseOutType(event, item) {
+
+    //Initialize variables
+    var clickedCircle;
+    var clickedLine;
+    var typeTemp;
+
+    //Select all circles
+    const allCircles = d3.selectAll(".circle_type");
+
+    //Select all lines
+    const allLines = d3.selectAll(".line_type");
+
+    //Save the clickedCircle and clickedLine
+    if(item[1].type != null) {
+        
+        typeTemp = item[1].type;
+        clickedCircle = allCircles.filter(function (d) {
+            return typeTemp === d[1].type;
+            });
+        
+        clickedLine = allLines.filter(function (d) {
+            return typeTemp === d[0][2];
+            });
+
+    } else {
+
+        typeTemp = item[0][2];
+        clickedCircle = allCircles.filter(function (d) {
+            return typeTemp === d[1].type;
+            });
+        
+        clickedLine = allLines.filter(function (d) {
+            return typeTemp === d[0][2];
+        });
+
+    }
+
+    //Mark circle and line has overed
+    clickedCircle.attr("fill", typeColors[typeTemp]);
+    clickedLine.style("stroke", typeColors[typeTemp]);
 
 }
