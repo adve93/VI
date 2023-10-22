@@ -1,7 +1,7 @@
-// Create an empty Map
+//Create an empty Map
 const selected = new Map();
 
-// Add temp pairs to the Map
+//Add temp pairs to the Map
 selected.set("type", "");
 selected.set("sex", "");
 selected.set("generation", -1);
@@ -19,31 +19,27 @@ function handleTypeClick(event, item) {
     //Select all lines
     const allLines = d3.selectAll(".line_type");
 
-    //Save the clickedCircle and clickedLine
+    //Get selected type
     if(item[1].type != null) {
+
         selected.set("type", item[1].type);
         typeTemp = item[1].type;
        
-        clickedCircle = allCircles.filter(function (d) {
-            return typeTemp === d[1].type;
-            });
-        
-        clickedLine = allLines.filter(function (d) {
-            return typeTemp === d[0][2];
-            });
-
     } else {
+
         selected.set("type", item[0][2]);
         typeTemp = item[0][2];
 
-        clickedCircle = allCircles.filter(function (d) {
-            return typeTemp === d[1].type;
-            });
-        
-        clickedLine = allLines.filter(function (d) {
-            return typeTemp === d[0][2];
-            });
     }
+
+    //Save the clickedCircle and clickedLine
+    clickedCircle = allCircles.filter(function (d) {
+        return typeTemp === d[1].type;
+    });
+    
+    clickedLine = allLines.filter(function (d) {
+        return typeTemp === d[0][2];
+    });
     
     //Check to see if type was already selected
     if(clickedCircle.attr('opacity') == 1) {
@@ -67,12 +63,15 @@ function handleTypeClick(event, item) {
             })
             .attr('opacity', 0.02)
             .attr('stroke-width', 0.2);
+        
 
         clickedCircle.attr('opacity', 1)
         .raise();
 
         clickedLine.attr('opacity', 1)
+        .attr('stroke-width', 1)
         .raise();
+
     } 
 
     updatePieChart();
@@ -118,8 +117,10 @@ function handleMouseOverType(event, item) {
     }
 
     //Mark circle and line has overed
-    clickedCircle.attr("fill", "red");
-    clickedLine.style("stroke", "red");
+    clickedCircle.attr("fill", "red")
+    .raise();
+    clickedLine.style("stroke", "red")
+    .raise();
 
 }
 

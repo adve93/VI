@@ -235,7 +235,8 @@ function createParallelCoordinatesPlot(data) {
                 .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
 
             svg.append("circle")
-                .attr("class", "pc_circle")
+                .datum(lineData)
+                .attr("class", "line_type")
                 .attr("cx", xPosition)
                 .attr("cy", yPosition)
                 .attr("r", 6) // Adjust the radius of the circle
