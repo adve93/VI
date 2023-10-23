@@ -3,7 +3,7 @@ const selected = new Map();
 
 //Add temp pairs to the Map
 selected.set("type", "");
-selected.set("sex", "");
+selected.set("genre", "");
 selected.set("generation", -1);
 
 function handleTypeClick(event, item) {
@@ -96,22 +96,22 @@ function handleMouseOverType(event, item) {
         
         typeTemp = item[1].type;
         clickedCircle = allCircles.filter(function (d) {
-            return item[1].type === d[1].type;
+            return typeTemp === d[1].type;
             });
         
         clickedLine = allLines.filter(function (d) {
-            return item[1].type === d[0][2];
+            return typeTemp === d[0][2];
             });
 
     } else {
 
         typeTemp = item[0][2];
         clickedCircle = allCircles.filter(function (d) {
-            return item[0][2] === d[1].type;
+            return typeTemp === d[1].type;
             });
         
         clickedLine = allLines.filter(function (d) {
-            return item[0][2] === d[0][2];
+            return typeTemp === d[0][2];
         });
 
     }

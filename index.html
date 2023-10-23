@@ -4,7 +4,7 @@
         <title>Projeto VI</title>
         <style>
             body{
-                background-image: url('background3.jpg');
+                background-image: url('');
                 background-size: cover;
                 background-repeat: no-repeat;
                 background-attachment: fixed; /* Optional: To prevent scrolling with the page content */
@@ -23,6 +23,12 @@
             }
             .visualization {
                 padding: 10px;
+            }
+
+            #chorDiagram {
+                position: fixed;
+                bottom: 20px;
+                left: 50px;
             }
 
             #bubbleChart {
@@ -52,6 +58,7 @@
     </head>
     <body onload="startDashboard()" >
         <div class="dashboard">
+            <div class="visualization" id="chorDiagram"></div>
             <div class="visualization" id="bubbleChart"></div>
             <div class="visualization" id="pieChart"></div>
             <div class="visualization" id="parallelCoordinatesPlot"></div>

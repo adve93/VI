@@ -331,3 +331,99 @@ function createPieChart(data) {
         .style("font-size", 17)
 
 }
+
+function createChordDiagram(data) {
+
+    //Define radius
+    const outerRadius = 40;
+    const innerRadius = outerRadius - 20;
+
+    //Type pos translator
+    const typePos = {
+        "normal": 0,
+        "fire": 1,
+        "water": 2,
+        "electric": 3,
+        "grass": 4,
+        "ice": 5,
+        "fighting": 6,
+        "poison": 7,
+        "ground": 8,
+        "flying": 9,
+        "psychic": 10,
+        "bug": 11,
+        "rock": 12,
+        "ghost": 13,
+        "steel": 14,
+        "dragon": 15,
+        "dark": 16,
+        "fairy": 17
+    };
+
+    //Create an object to store abilities by type
+    var abilitiesByType = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+
+    //Create an object to store types
+    var typing = ["normal","fire","water","electric","grass","ice",
+    "fighting","poison","ground","flying","psychic","bug","rock","ghost","steel",
+    "dragon","dark","fairy"];
+
+
+    //Fill abilitiesByType array
+    data.forEach(d => {
+
+        //Check both type1 and type2
+        const types = [d.type1, d.type2]; 
+
+        //Get Pokemon abilities and push them into the array
+        var abl = [];
+        abl = d.abilities;
+        const validJSONString = abl.replace(/'/g, '"'); //Data in stored as a string so we parse it into an array
+        const array = JSON.parse(validJSONString);
+
+        types.forEach(type => {
+            if(type != -1) { //For mono type pokémon (to catch sentinel value)
+                array.forEach(a => {
+                    if(!(abilitiesByType[typePos[type]].includes(a))) //Check if ablitie is already in array 
+                        abilitiesByType[typePos[type]].push(a);
+                }); 
+            }     
+        });
+        
+    });
+    
+    //Calculate chords
+    chord = d3.chord()
+        .padAngle(5/innerRadius)
+        .sortSubgroups(d3.descending);
+    
+    //Calculate arcs   
+    arc = d3.arc()
+        .innerRadius(innerRadius)
+        .outerRadius(outerRadius);
+    
+    //Calculate ribbons  
+    ribbon = d3.ribbon()
+        .radius(innerRadius - 1)
+        .padAngle(1/innerRadius);
+
+    chords = chord(abilitiesByType);
+    
+    //Create the svg area
+    const svg = d3.select("#chorDiagram")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height  + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    svg.data(chords)
+    .append("g")
+    .selectAll("g")
+    .join("g")
+    .append("path")
+    .style("fill", "red")
+    .style("stroke", "black")
+    .attr("d", arc);
+    
+}
