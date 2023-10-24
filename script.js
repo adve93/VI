@@ -8,8 +8,6 @@ const margin = {
     bottom: 40,
     left: 40,
 };
-const width = 600 - margin.left - margin.right;
-const height = 500 - margin.top - margin.bottom;
 
 const genderColors = {
     "Male": "#5888B4",
@@ -55,6 +53,7 @@ function startDashboard() {
             d.base_egg_steps = +d.base_egg_steps;
             d.height_m = +d.height_m;
             d.weight_kg = +d.weight_kg;
+            d.percentage_male = +d.percentage_male;
         });
         
         globalData = data;

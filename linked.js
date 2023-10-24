@@ -43,7 +43,7 @@ function handleTypeClick(event, item) {
     //Check to see if type was already selected
     if(clickedCircle.attr('opacity') == 1) {
 
-        unselecting();
+        console.log("Unselecting... " + selected.get("type"));
 
         //Deselect type
         allCircles.attr('opacity', 1.1);
@@ -52,7 +52,7 @@ function handleTypeClick(event, item) {
 
     } else {
 
-        selecting();
+        console.log("Selecting... " + selected.get("type"));
 
         //Select type
         allCircles.filter(function (d) {
@@ -75,6 +75,29 @@ function handleTypeClick(event, item) {
         .raise();
 
     } 
+
+    updateIdioms(selected);
+}
+
+function handleGenderClick(event, item){
+    var gender = item.data[0];
+
+    //Select all slices
+    const allSlices = d3.selectAll(".slices");
+
+    if(selected.get("gender") === gender) {
+
+        console.log("Unselecting... " + gender);
+        selected.set("gender", "");
+    }
+    else {
+
+        console.log("Selecting... " + gender);
+        selected.set("gender", gender);
+    }
+
+    updateIdioms(selected);
+
 }
 
 function handleMouseOverType(event, item) {
@@ -165,16 +188,4 @@ function handleMouseOutType(event, item) {
     clickedCircle.attr("fill", typeColors[typeTemp]);
     clickedLine.style("stroke", typeColors[typeTemp]);
 
-}
-
-
-function unselecting() {
-    console.log("Unselecting... " + selected.get("type"));
-    selected.set("type", "");
-    updateIdioms(selected);
-}
-
-function selecting() {
-    console.log("Selecting... " + selected.get("type"));
-    updateIdioms(selected);
 }

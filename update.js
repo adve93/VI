@@ -5,7 +5,6 @@ var gender;
 var generation;
 
 function updateIdioms(filters) {
-    console.log(filters);
 
     type = filters.get("type");
     gender = filters.get("gender");
@@ -20,16 +19,18 @@ function updateIdioms(filters) {
     console.log("}")
 
     updatePieChart();
+    updateParallelCoordinatesPlot();
+    updateBubbleChart();
 }
 
 // A function that create / update the plot for a given variable:
 function updatePieChart() {
 
-    const width2 = 350 - margin.left - margin.right;
-    const height2 = 300 - margin.top - margin.bottom;
+    const width = 350 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
 
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-    const radius = Math.min(width2, height2) / 2 - 40;
+    const radius = Math.min(width, height) / 2 - 40;
 
     var data;
 
@@ -42,7 +43,7 @@ function updatePieChart() {
         });
     }
 
-    const male_average = d3.mean(data, d => d.percentage_male);
+    const male_average = d3.mean(data, (d) => (d.percentage_male !== -1) ? d.percentage_male : NaN);
     const female_average = 100 - male_average;
 
     const avg = { Male: male_average, Female: female_average };
@@ -60,7 +61,10 @@ function updatePieChart() {
     const data_ready = pie(Object.entries(avg));
 
     // map to data
-    const chart = d3.select("#pieChart").selectAll("path")
+    const chart = d3.select("#pieChart")
+        .select("svg")
+        .select("g")
+        .selectAll("path")
         .data(data_ready);
 
     // Build the pie chart
@@ -71,6 +75,7 @@ function updatePieChart() {
         .attr("stroke", "white")
         .style("stroke-width", "2px")
         .style("opacity", 1)
+        .on("click", handleGenderClick)
         .append("title")
         .text(d => `${d.data[1].toFixed(2)}%`);
 
@@ -84,17 +89,205 @@ function updatePieChart() {
         .style("text-anchor", "middle")
         .style("font-size", 17);
 
-    if (filterLabel) filterLabel.remove();
+    if (filterLabel) filterLabel.remove();      // Remove label with all selected filters
 
     if (type) {
         // Add the "hi" text under the pie chart
         filterLabel = d3.select("#pieChart")
             .append("text")
             .text(type)
-            .attr("x", (width2 / 2))
+            .attr("x", (width / 2))
             .attr("y", 400)
             .style("text-anchor", "start")
             .style("font-size", 20);
     }
 
+}
+
+function updateParallelCoordinatesPlot() {
+
+    const width = 800 - margin.left - margin.right;
+    const height = 350 - margin.top - margin.bottom;
+
+    var data;
+
+    if (gender === "Male") {
+        data = globalData.filter(function (d) {
+            return d.percentage_male === 100;
+        });
+    }
+    else if(gender === "Female") {
+        data = globalData.filter(function (d) {
+            return d.percentage_male === 0;
+        });
+    }
+    else {
+        data = globalData;
+    }
+
+    //Calculate average values for fighting stats
+    const updatedAverageData = d3.rollup(data,
+        group => ({
+            Attack: d3.mean(group, d => d.attack).toFixed(2),
+            SpAttack: d3.mean(group, d => d.sp_attack).toFixed(2),
+            Defense: d3.mean(group, d => d.defense).toFixed(2),
+            SpDefense: d3.mean(group, d => d.sp_defense).toFixed(2),
+            HP: d3.mean(group, d => d.hp).toFixed(2),
+            Speed: d3.mean(group, d => d.speed).toFixed(2),
+            type: group[0].type1
+        }),
+        d => d.type1
+    );
+
+    const svg = d3.select("#parallelCoordinatesPlot").select("svg").select("g");
+
+    svg.selectAll(".line_type").remove();       // Remove plot marks
+
+    const stats = ["Attack", "SpAttack", "Defense", "SpDefense", "HP", "Speed"];
+
+    const yMin = d3.min(globalData, d => d3.min([d.attack, d.sp_attack, d.defense, d.sp_defense, d.hp, d.speed]));      // Min y possible value
+    const yMax = d3.max(globalData, d => d3.max([d.attack, d.sp_attack, d.defense, d.sp_defense, d.hp, d.speed]));      // Max y possible value
+
+    // Define the y-scale for the stats
+    const yScales = {
+        Attack: d3.scaleLinear().domain([yMin, yMax]).range([height, 0]),
+        SpAttack: d3.scaleLinear().domain([yMin, yMax]).range([height, 0]),
+        Defense: d3.scaleLinear().domain([yMin, yMax]).range([height, 0]),
+        SpDefense: d3.scaleLinear().domain([yMin, yMax]).range([height, 0]),
+        HP: d3.scaleLinear().domain([yMin, yMax]).range([height, 0]),
+        Speed: d3.scaleLinear().domain([yMin, yMax]).range([height, 0])
+    };
+
+    const offset = width / (stats.length + 1);
+
+    updatedAverageData.forEach((d, i) => {
+        const type = d.type;
+
+        // Initialize an array to store the coordinates of the line
+        const lineData = stats.map((stat, j) => {
+            const xPosition = (j + 1) * offset;
+            const yPosition = yScales[stat](updatedAverageData.get(type)[stat]);
+            const type2 = type;
+            return [xPosition, yPosition, type2];
+        });
+
+        const tooltip = stats.map(stat => {
+            return `Average ${stat}: ${updatedAverageData.get(type)[stat]}`;
+        });
+
+        // Create points
+        stats.forEach((stat, j) => {
+            const xPosition = (j + 1) * offset;
+            const yPosition = yScales[stat](updatedAverageData.get(type)[stat]);
+
+            const lineGenerator = d3.line();
+            svg.append("path")
+                .datum(lineData)
+                .attr("class", "line_type")
+                .attr("d", lineGenerator)
+                .attr("type", type)
+                .style("stroke", typeColors[type]) // Adjust the line color
+                .style("fill", "none")
+                .attr('opacity', 1.1)
+                .style("stroke-width", 2) // Adjust the line width
+                .on("click", handleTypeClick)
+                .on("mouseover", handleMouseOverType)
+                .on("mouseout", handleMouseOutType)
+                .append("title")
+                .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
+
+            svg.append("circle")
+                .datum(lineData)
+                .attr("class", "line_type")
+                .attr("cx", xPosition)
+                .attr("cy", yPosition)
+                .attr("r", 6) // Adjust the radius of the circle
+                .attr("type", type)
+                .style("fill", typeColors[type]) // Adjust the fill color
+                .attr('opacity', 1.1)
+                .attr('stroke-width', 1)
+                .on("click", handleTypeClick)
+                .append("title")
+                .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
+        });
+    });
+}
+
+function updateBubbleChart(){
+
+    const width = 750 - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
+
+    var data;
+
+    if (gender === "Male") {
+        data = globalData.filter(function (d) {
+            return d.percentage_male === 100;
+        });
+    }
+    else if (gender === "Female") {
+        data = globalData.filter(function (d) {
+            return d.percentage_male === 0;
+        });
+    }
+    else {
+        data = globalData;
+    }
+
+    //Calculate average values for height_m and base_egg_steps
+    const updatedAverageData = d3.rollup(filteredData,
+        group => ({
+            averageHeight: d3.mean(group, d => d.height_m),
+            averageBaseEggSteps: Math.round(d3.mean(group, d => d.base_egg_steps)),
+            type: group[0].type1,
+            averageWeight: d3.mean(group, d => d.weight_kg)
+        }),
+        d => d.type1
+    );
+
+    const filteredData = updatedAverageData.filter(d => !isNaN(d[1].averageBaseEggSteps) && !isNaN(d[1].averageHeight));
+
+    const svg = d3.select("#bubbleChart").select("svg").select("g");
+    svg.selectAll(".circle_type").remove();     // Remove bubbles 
+    svg.selectAll(".pearson").remove();     // Remove pearson line
+
+    const xMax = d3.max(filteredData, d => d.averageBaseEggSteps);
+    const yMax = d3.max(filteredData, d => d.averageHeight);
+    const rMin = d3.min(filteredData, d => d.weight_kg);
+    const rMax = d3.max(filteredData, d => d.weight_kg);
+
+    //Define scales for x and y
+    const xScale = d3.scaleLinear()
+        .domain([0, xMax])
+        .range([margin.left, width - margin.right]);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, yMax])
+        .range([height - margin.bottom, margin.top]);
+
+    const rScale = d3.scaleLinear()
+        .domain([rMin, rMax])
+        .range([10, 20]);
+
+    //Add circles to the scatter plot representing each country
+    svg.selectAll(".circle")
+        .data(filteredData)
+        .enter()
+        .append("circle")
+        .attr("class", "circle_type")
+        .attr("cx", d => xScale(d[1].averageBaseEggSteps))
+        .attr("cy", d => yScale(d[1].averageHeight))
+        .attr("r", d => rScale(d[1].averageWeight))
+        .attr("type", d => d[1].type)
+        .attr("fill", d => typeColors[d[1].type])
+        .attr('stroke-width', 1)
+        .attr("stroke", "black")
+        .attr('opacity', 1.1)
+        .on("click", handleTypeClick)
+        .on("mouseover", handleMouseOverType)
+        .on("mouseout", handleMouseOutType)
+        .append("title")
+        .text(d =>
+            `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
+        );
 }
