@@ -39,10 +39,6 @@ function createBubbleChart(data) {
         .domain([d3.min(averageData.values(), d => d.averageWeight), d3.max(averageData.values(), d => d.averageWeight)])
         .range([10, 20]);
 
-    const correlationLine = d3.line()
-        .x(d => xScale(d.averageBaseEggSteps))  // Use xScale for x-coordinate
-        .y(d => yScale(correlationCoefficient * d.averageBaseEggSteps)) // Adjusted for y-coordinate
-
     //Add circles to the scatter plot representing each country
     svg.selectAll(".circle")
         .data(averageData)
@@ -52,7 +48,7 @@ function createBubbleChart(data) {
         .attr("cx", d => xScale(d[1].averageBaseEggSteps))
         .attr("cy", d => yScale(d[1].averageHeight))
         .attr("r", d => rScale(d[1].averageWeight))
-        .attr("item", d => d[1].type)
+        .attr("type", d => d[1].type)
         .attr("fill", d => typeColors[d[1].type])
         .attr('stroke-width',1)
         .attr("stroke", "black")
@@ -149,16 +145,12 @@ function createParallelCoordinatesPlot(data) {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const dimensions = ["Attack", "SpAttack", "Defense", "SpDefense", "HP", "Speed"];
+    const stats = ["Attack", "SpAttack", "Defense", "SpDefense", "HP", "Speed"];
 
 
     const yTickValues = [40, 60, 80, 100, 120, 140];
 
-    // Define the x-scale for the types
-    const xScale = d3.scalePoint()
-        .domain(Object.keys(averageData))
-        .range([0, width]);
-
+    // Define the y-scale for the stats
     const yScales = {
         Attack: d3.scaleLinear().domain([40, 140]).range([height, 0]),
         SpAttack: d3.scaleLinear().domain([40, 140]).range([height, 0]),
@@ -171,27 +163,27 @@ function createParallelCoordinatesPlot(data) {
     // Create a single shared scale for all axes
     const scale = d3.scaleLinear().domain([40, 140]).range([height, 0]);
 
-    const offset = width / (dimensions.length + 1);
+    const offset = width / (stats.length + 1);
 
     // Add a single scale before all axes
     svg.append("g")
         .attr("class", "scale-axis")
         .call(d3.axisLeft(scale).tickValues(yTickValues));
 
-    // Add vertical axes for the selected dimensions with a fixed separation
-    dimensions.forEach((dimension, i) => {
+    // Add vertical axes for the selected stats with a fixed separation
+    stats.forEach((stat, i) => {
         const xPosition = (i + 1) * offset; // Add 1 to the index to account for the first axis
         svg.append("g")
             .attr("class", "axis")
             .attr("transform", `translate(${xPosition},0)`)
-            .call(d3.axisLeft(yScales[dimension]).tickValues([]));
+            .call(d3.axisLeft(yScales[stat]).tickValues([]));
 
         // Add the axis label
         svg.append("text")
             .attr("x", xPosition)
             .attr("y", height + 20) // Adjust the vertical position of the label
             .style("text-anchor", "middle")
-            .text(dimension);
+            .text(stat);
     });
 
 
@@ -199,31 +191,28 @@ function createParallelCoordinatesPlot(data) {
         const type = d.type;
 
         // Initialize an array to store the coordinates of the line
-        const lineData = dimensions.map((dimension, j) => {
+        const lineData = stats.map((stat, j) => {
             const xPosition = (j + 1) * offset;
-            const yPosition = yScales[dimension](averageData.get(type)[dimension]);
+            const yPosition = yScales[stat](averageData.get(type)[stat]);
             const type2 = type;
             return [xPosition, yPosition, type2];
         });
 
-        const tooltip = dimensions.map(stat => {
+        const tooltip = stats.map(stat => {
             return `${stat}: ${averageData.get(type)[stat]}`;
         });
 
-        // Use D3 to draw the line connecting the points
-        const lineGenerator = d3.line();
-
         // Create points
-        dimensions.forEach((dimension, j) => {
+        stats.forEach((stat, j) => {
             const xPosition = (j + 1) * offset;
-            const yPosition = yScales[dimension](averageData.get(type)[dimension]);
+            const yPosition = yScales[stat](averageData.get(type)[stat]);
 
             const lineGenerator = d3.line();
             svg.append("path")
                 .datum(lineData)
                 .attr("class", "line_type")
                 .attr("d", lineGenerator)
-                .attr("item", type)
+                .attr("type", type)
                 .style("stroke", typeColors[type]) // Adjust the line color
                 .style("fill", "none")
                 .attr('opacity', 1.1)
@@ -240,7 +229,7 @@ function createParallelCoordinatesPlot(data) {
                 .attr("cx", xPosition)
                 .attr("cy", yPosition)
                 .attr("r", 6) // Adjust the radius of the circle
-                .attr("item", type)
+                .attr("type", type)
                 .style("fill", typeColors[type]) // Adjust the fill color
                 .attr('opacity', 1.1)
                 .attr('stroke-width', 1)
@@ -275,60 +264,61 @@ function calculatePearsonCorrelation(data) {
 function createPieChart(data) {
 
 
-    const width = 350 - margin.left - margin.right;
-    const height = 300 - margin.top - margin.bottom;
+    const width2 = 350 - margin.left - margin.right;
+    const height2 = 300 - margin.top - margin.bottom;
 
     const male_average = d3.mean(data, d => d.percentage_male);
     const female_average = 100 - male_average;
 
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-    const radius = Math.min(width, height) / 2 - 40;
+    const radius = Math.min(width2, height2) / 2 - 40;
 
     // append the svg object to the div called 'my_dataviz'
     const svg = d3.select("#pieChart")
         .append("svg")
-        .attr("width", width)
-        .attr("height", height)
+        .attr("width", width2)
+        .attr("height", height2)
         .append("g")
-        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+        .attr("transform", `translate(${width2 / 2}, ${height2 / 2})`);
 
-    // set the color scale
-    const color = d3.scaleOrdinal()
-        .range(["#5888B4", "#D3469D"])
+    const avg = { Male: male_average, Female: female_average };
 
-    // Compute the position of each group on the pie:
-    const pie = d3.pie()
-        .value(function (d) { return d[1] })
-    const data_ready = pie(Object.entries({ Male: male_average, Female: female_average }))
-
-    const arcGenerator = d3.arc()
+    var arcGenerator = d3.arc()
         .innerRadius(0)
         .outerRadius(radius);
 
-    svg.selectAll('slices')
-        .data(data_ready)
-        .join('path')
-        .attr('d', d3.arc()
-            .innerRadius(0)
-            .outerRadius(radius)
-        )
-        .attr('fill', (d, i) => color(i))
-        .attr("stroke", "black")
+    // Compute the position of each group on the pie:
+    const pie = d3.pie()
+        .value(function (d) { return d[1]; })
+        .sort(function (a, b) { return d3.ascending(a.key, b.key); }) // This make sure that group order remains the same in the pie chart
+
+    const data_ready = pie(Object.entries(avg))
+
+    // map to data
+    const chart = svg.selectAll("path")
+        .data(data_ready);
+
+    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+    chart.join('path')
+        .attr('d', arcGenerator)
+        .attr("class", "slice")
+        .attr('fill', d => genderColors[d.data[0]])
+        .attr("stroke", "white")
         .style("stroke-width", "2px")
-        .style("opacity", 0.7)
+        .style("opacity", 1)
         .append("title")
         .text(d => `${d.data[1].toFixed(2)}%`);
 
 
     // Labels
-    svg.selectAll('slices')
-        .data(data_ready)
-        .enter()
+    chart.enter()
         .append('text')
         .text(function (d) { return d.data[0] })
-        .attr("transform", function (d) { return "translate(" + arcGenerator.centroid(d) + ")"; })
+        .attr("transform", function (d) {
+            return "translate(" + arcGenerator.centroid(d) + ")";
+        })
         .style("text-anchor", "middle")
-        .style("font-size", 17)
+        .style("font-size", 17);
 
 }
 

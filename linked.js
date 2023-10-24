@@ -1,10 +1,10 @@
 //Create an empty Map
-const selected = new Map();
+var selected = new Map();
 
 //Add temp pairs to the Map
 selected.set("type", "");
-selected.set("genre", "");
-selected.set("generation", -1);
+selected.set("gender", "");
+selected.set("generation", "");
 
 function handleTypeClick(event, item) {
 
@@ -40,17 +40,19 @@ function handleTypeClick(event, item) {
     clickedLine = allLines.filter(function (d) {
         return typeTemp === d[0][2];
     });
-    
     //Check to see if type was already selected
     if(clickedCircle.attr('opacity') == 1) {
 
+        unselecting();
+
         //Deselect type
-        selected.set("type", "");
         allCircles.attr('opacity', 1.1);
         allLines.attr('opacity', 1.1)
                 .attr('stroke-width', 1);
 
     } else {
+
+        selecting();
 
         //Select type
         allCircles.filter(function (d) {
@@ -73,9 +75,6 @@ function handleTypeClick(event, item) {
         .raise();
 
     } 
-
-    updatePieChart();
-
 }
 
 function handleMouseOverType(event, item) {
@@ -166,4 +165,16 @@ function handleMouseOutType(event, item) {
     clickedCircle.attr("fill", typeColors[typeTemp]);
     clickedLine.style("stroke", typeColors[typeTemp]);
 
+}
+
+
+function unselecting() {
+    console.log("Unselecting... " + selected.get("type"));
+    selected.set("type", "");
+    updateIdioms(selected);
+}
+
+function selecting() {
+    console.log("Selecting... " + selected.get("type"));
+    updateIdioms(selected);
 }
