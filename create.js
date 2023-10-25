@@ -217,7 +217,7 @@ function createParallelCoordinatesPlot(data) {
                 .style("fill", "none")
                 .attr('opacity', 1.1)
                 .style("stroke-width", 2) // Adjust the line width
-                .on("click", d => handleTypeClick)
+                .on("click", handleTypeClick)
                 .on("mouseover", handleMouseOverType)
                 .on("mouseout", handleMouseOutType)
                 .append("title")
@@ -233,7 +233,7 @@ function createParallelCoordinatesPlot(data) {
                 .style("fill", typeColors[type]) // Adjust the fill color
                 .attr('opacity', 1.1)
                 .attr('stroke-width', 1)
-                .on("click", d => handleTypeClick)
+                .on("click", handleTypeClick)
                 .append("title")
                 .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
         });

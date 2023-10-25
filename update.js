@@ -138,6 +138,8 @@ function updateBarChart(data) {
 
     // re-render the y-axis
     svg.select(".y-axis")
+        .transition()
+        .duration(1000)
         .call(d3.axisLeft(yScale).tickSizeOuter(0));
 
     // Update the data for the bars
@@ -145,8 +147,7 @@ function updateBarChart(data) {
         .data(generationCountsUpdated);
 
     // Update the bars' positions and heights
-    bars
-        .transition()
+    bars.transition()
         .duration(1000)
         .attr("x", d => xScale(d.generation))
         .attr("y", d => yScale(d.legendaryCount))
