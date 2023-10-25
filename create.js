@@ -217,7 +217,7 @@ function createParallelCoordinatesPlot(data) {
                 .style("fill", "none")
                 .attr('opacity', 1.1)
                 .style("stroke-width", 2) // Adjust the line width
-                .on("click",handleTypeClick)
+                .on("click", d => handleTypeClick)
                 .on("mouseover", handleMouseOverType)
                 .on("mouseout", handleMouseOutType)
                 .append("title")
@@ -233,7 +233,7 @@ function createParallelCoordinatesPlot(data) {
                 .style("fill", typeColors[type]) // Adjust the fill color
                 .attr('opacity', 1.1)
                 .attr('stroke-width', 1)
-                .on("click", handleTypeClick)
+                .on("click", d => handleTypeClick)
                 .append("title")
                 .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
         });
@@ -436,6 +436,7 @@ function createBarChart(data) {
     const generationCounts = Array.from(generationData, ([generation, group]) => ({
         generation: generation,
         legendaryCount: d3.sum(group, d => d.is_legendary),
+        type: group[0].type1,
     }));
 
     //Create the x and y scales
@@ -461,6 +462,8 @@ function createBarChart(data) {
         .attr("height", d => height - yScale(d.legendaryCount))
         .attr("fill", "steelblue")
         .attr("stroke", "black")
+        .attr('opacity', 1.1)
+        .on("click", handleGenerationClick)
         .on("mouseover", handleMouseOverGeneration)
         .on("mouseout", handleMouseOutGeneration)
         .append("title")
