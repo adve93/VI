@@ -119,8 +119,6 @@ function updateBarChart(data) {
         legendaryCount: d3.sum(group, d => d.is_legendary),
     }));
 
-    generationCountsUpdated.forEach(d => {console.log(d.generation, d.legendaryCount)});
-
     // Update the yScale domain with the new data
     const yScale = d3.scaleLinear()
         .domain([0, d3.max(generationCountsUpdated, d => d.legendaryCount)])
@@ -153,37 +151,10 @@ function updateBarChart(data) {
         .attr("x", d => xScale(d.generation))
         .attr("y", d => yScale(d.legendaryCount))
         .attr("width", xScale.bandwidth())
-        .attr("height", d => height - yScale(d.legendaryCount));
-
-    // Exit any bars that are no longer needed
-    bars.exit()
-        .transition()
-        .duration(1000)
-        .attr("width", 0)
-        .remove();
-
-    //Enter and append new bars
-    bars.enter()
-        .append("rect")
-        .attr("class", "legendary_bar")
-        .attr("x", d => xScale(d.generation))
-        .attr("y", d => yScale(d.legendaryCount))
-        .attr("width", xScale.bandwidth())
         .attr("height", d => height - yScale(d.legendaryCount))
-        .attr("fill", "steelblue")
-        .attr("stroke", "black")
-        .attr('opacity', 1.1);
-
-    //Add tooltips to all bars with the movie title as the content
-    svg
-    .selectAll(".legendary_bar")
-    .on("click", handleGenerationClick)
-    .on("mouseover", handleMouseOverGeneration)
-    .on("mouseout", handleMouseOutGeneration)
-    .append("title")
-    .text( d =>
-        `Generation: ${d.generation}\nNum Legendaries:${d.legendaryCount}`
-    );
-    
+        .select("title")
+        .text(d => {
+            return `Generation: ${d.generation}\nNumero Legendaries: ${d.legendaryCount}`;
+        });
 
 }
