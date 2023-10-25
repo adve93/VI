@@ -16,7 +16,7 @@ function updateIdioms(filters) {
 }
 
 // A function that create / update the plot for a given variable:
-function updatePieChart(data) {
+function updatePieChart() {
 
     const width2 = 350 - margin.left - margin.right;
     const height2 = 300 - margin.top - margin.bottom;
@@ -92,7 +92,7 @@ function updatePieChart(data) {
 
 }
 
-function updateBarChart(data) {
+function updateBarChart() {
 
     //Define variables
     var data;
