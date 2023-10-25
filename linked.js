@@ -167,6 +167,48 @@ function handleMouseOutType(event, item) {
 
 }
 
+function handleMouseOverGeneration(event, item) {
+
+    //Initialize variables
+    var clickedBar;
+    var genTemp;
+
+    //Select all bars
+    const allBars = d3.selectAll(".legendary_bar");
+
+    //Save the clickedBar
+    genTemp = item.generation;
+    clickedBar = allBars.filter(function (d) {
+        return genTemp === d.generation;
+        });
+
+
+    //Mark circle and line has overed
+    clickedBar.attr("fill", "red");
+
+}
+
+function handleMouseOutGeneration(event, item) {
+
+    //Initialize variables
+    var clickedBar;
+    var genTemp;
+
+    //Select all bars
+    const allBars = d3.selectAll(".legendary_bar");
+
+    //Save the clickedBar
+    genTemp = item.generation;
+    clickedBar = allBars.filter(function (d) {
+        return genTemp === d.generation;
+        });
+
+
+    //Mark circle and line has overed
+    clickedBar.attr("fill", "steelblue");
+    
+}
+
 
 function unselecting() {
     console.log("Unselecting... " + selected.get("type"));
