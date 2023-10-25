@@ -5,26 +5,18 @@ var gender;
 var generation;
 
 function updateIdioms(filters) {
-    console.log(filters);
 
     type = filters.get("type");
     gender = filters.get("gender");
     generation = filters.get("generation");
 
-    console.log("Applying filters {");;
-    for (const [key, value] of selected) {
-        if (value) {
-            console.log(`  ${key}: ${value}`);
-        }
-    }
-    console.log("}")
 
     updatePieChart();
     updateBarChart();
 }
 
 // A function that create / update the plot for a given variable:
-function updatePieChart() {
+function updatePieChart(data) {
 
     const width2 = 350 - margin.left - margin.right;
     const height2 = 300 - margin.top - margin.bottom;
@@ -39,7 +31,7 @@ function updatePieChart() {
     }
     else {
         data = globalData.filter(function (d) {
-            return d.type1 === type;
+            return d.type1 === type || d.type2 === type;
         });
     }
 
@@ -100,15 +92,12 @@ function updatePieChart() {
 
 }
 
-function updateBarChart() {
+function updateBarChart(data) {
 
     //Define variables
     var data;
     const width = 500 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
-
-    //Select the SVG element of the bar chart
-    const svg = d3.select("#barChart").select("svg").select("g");
 
     //Filter data
     if (!type) {
@@ -116,46 +105,64 @@ function updateBarChart() {
     }
     else {
         data = globalData.filter(function (d) {
-            return d.type1 === type;
+            return d.type1 === type || d.type2 === type;
         });
     }
 
-    //Group the data by generation and count legendary Pokémon
-    const generationData = d3.group(data, d => d.generation);
-    const generationCounts = Array.from(generationData, ([generation, group]) => ({
+    const svg = d3.select("#barChart")
+        .select("svg").select("g");
+
+    // Group the filtered data by generation and count legendary Pokémon
+    const generationDataUpdated = d3.group(data, d => d.generation);
+    const generationCountsUpdated = Array.from(generationDataUpdated, ([generation, group]) => ({
         generation: generation,
         legendaryCount: d3.sum(group, d => d.is_legendary),
-        type: group[0].type1,
     }));
 
-    //Create the x and y scales
-    const xScale = d3.scaleBand()
-        .domain(generationCounts.map(d => d.generation))
-        .range([0, width])
-        .padding(0.1);
+    generationCountsUpdated.forEach(d => {console.log(d.generation, d.legendaryCount)});
 
+    // Update the yScale domain with the new data
     const yScale = d3.scaleLinear()
-        .domain([0, d3.max(generationCounts, d => d.legendaryCount)])
+        .domain([0, d3.max(generationCountsUpdated, d => d.legendaryCount)])
         .nice()
         .range([height, 0]);
 
-    //Select all existing bars and bind the data to them
-    const bars = svg.selectAll(".bar")
-        .data(data);
+    // update xScale
+    const xScale = d3.scaleBand()
+        .domain(generationCountsUpdated.map(d => d.generation))
+        .range([0, width])
+        .padding(0.1);
+    
+    // re-render the x-axis
+    svg.select(".x-axis")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(xScale));
 
-    //Update existing bars with transitions for position, width, height, and color
+    // re-render the y-axis
+    svg.select(".y-axis")
+        .call(d3.axisLeft(yScale).tickSizeOuter(0));
+
+    // Update the data for the bars
+    const bars = svg.selectAll(".legendary_bar")
+        .data(generationCountsUpdated);
+
+    // Update the bars' positions and heights
     bars
         .transition()
         .duration(1000)
         .attr("x", d => xScale(d.generation))
         .attr("y", d => yScale(d.legendaryCount))
         .attr("width", xScale.bandwidth())
-        .attr("height", d => height - yScale(d.legendaryCount))
-        .attr("fill", "steelblue")
-        .attr("stroke", "black")
-        .attr('opacity', 1.1);
-    /*
-    // Add new bars for any new data points and transition them to their correct position and width
+        .attr("height", d => height - yScale(d.legendaryCount));
+
+    // Exit any bars that are no longer needed
+    bars.exit()
+        .transition()
+        .duration(1000)
+        .attr("width", 0)
+        .remove();
+
+    //Enter and append new bars
     bars.enter()
         .append("rect")
         .attr("class", "legendary_bar")
@@ -165,24 +172,18 @@ function updateBarChart() {
         .attr("height", d => height - yScale(d.legendaryCount))
         .attr("fill", "steelblue")
         .attr("stroke", "black")
-        .attr('opacity', 1.1)
-        .transition()
-        .duration(2000);
+        .attr('opacity', 1.1);
 
-    //Remove any bars that are no longer in the updated data
-    bars.exit().transition().duration(500).attr("width", 0).remove();
-    */
-    // Add tooltips to all bars with the movie title as the content
-    svg.selectAll(".bars")
-        .on("click", handleGenerationClick)
-        .on("mouseover", handleMouseOverGeneration)
-        .on("mouseout", handleMouseOutGeneration)
-        .append("title")
-        .text( d =>
-            `Generation: ${d.generation}\nNum Legendaries:${d.legendaryCount}`
-        );
-
+    //Add tooltips to all bars with the movie title as the content
+    svg
+    .selectAll(".legendary_bar")
+    .on("click", handleGenerationClick)
+    .on("mouseover", handleMouseOverGeneration)
+    .on("mouseout", handleMouseOutGeneration)
+    .append("title")
+    .text( d =>
+        `Generation: ${d.generation}\nNum Legendaries:${d.legendaryCount}`
+    );
     
 
-    
 }

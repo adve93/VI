@@ -436,7 +436,6 @@ function createBarChart(data) {
     const generationCounts = Array.from(generationData, ([generation, group]) => ({
         generation: generation,
         legendaryCount: d3.sum(group, d => d.is_legendary),
-        type: group[0].type1,
     }));
 
     //Create the x and y scales
