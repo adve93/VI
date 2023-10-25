@@ -43,7 +43,8 @@ function handleTypeClick(event, item) {
     //Check to see if type was already selected
     if(clickedCircle.attr('opacity') == 1) {
 
-        unselecting();
+        selected.set("type", "");
+        updateIdioms(selected);
 
         //Deselect type
         allCircles.attr('opacity', 1.1);
@@ -52,7 +53,7 @@ function handleTypeClick(event, item) {
 
     } else {
 
-        selecting();
+        updateIdioms(selected);
 
         //Select type
         allCircles.filter(function (d) {
@@ -99,12 +100,15 @@ function handleGenerationClick(event, item) {
     if(clickedBar.attr('opacity') == 1) {
 
         selected.set("generation", "");
+        updateIdioms(selected);
 
         //Deselect type
         allBars.attr('opacity', 1.1);
 
     } else {
 
+        updateIdioms(selected);
+        
         //Select type
         allBars.filter(function (d) {
             return genTemp !== d.generation;
@@ -251,7 +255,6 @@ function handleMouseOutType(event, item) {
 
 
 function unselecting() {
-    console.log("Unselecting... " + selected.get("type"));
     selected.set("type", "");
     updateIdioms(selected);
 }

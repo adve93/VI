@@ -100,7 +100,7 @@ function updateBarChart() {
     const height = 300 - margin.top - margin.bottom;
 
     //Filter data
-    if (!type) {
+    if (!type && !gender) {
         data = globalData;
     }
     else {
@@ -112,6 +112,13 @@ function updateBarChart() {
     const svg = d3.select("#barChart")
         .select("svg").select("g");
 
+    // Group the non-filtered data by generation and count legendary Pokémon
+    const generationData = d3.group(globalData, d => d.generation);
+    const generationCounts = Array.from(generationData, ([generation, group]) => ({
+        generation: generation,
+        legendaryCount: d3.sum(group, d => d.is_legendary),
+    }));
+
     // Group the filtered data by generation and count legendary Pokémon
     const generationDataUpdated = d3.group(data, d => d.generation);
     const generationCountsUpdated = Array.from(generationDataUpdated, ([generation, group]) => ({
@@ -121,26 +128,15 @@ function updateBarChart() {
 
     // Update the yScale domain with the new data
     const yScale = d3.scaleLinear()
-        .domain([0, d3.max(generationCountsUpdated, d => d.legendaryCount)])
+        .domain([0, d3.max(generationCounts, d => d.legendaryCount)])
         .nice()
         .range([height, 0]);
 
     // update xScale
     const xScale = d3.scaleBand()
-        .domain(generationCountsUpdated.map(d => d.generation))
+        .domain(generationCounts.map(d => d.generation))
         .range([0, width])
         .padding(0.1);
-    
-    // re-render the x-axis
-    svg.select(".x-axis")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(xScale));
-
-    // re-render the y-axis
-    svg.select(".y-axis")
-        .transition()
-        .duration(1000)
-        .call(d3.axisLeft(yScale).tickSizeOuter(0));
 
     // Update the data for the bars
     const bars = svg.selectAll(".legendary_bar")

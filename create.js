@@ -74,32 +74,23 @@ function createBubbleChart(data) {
 
 
     //Add axes
-    const xAxis = d3.axisBottom(xScale);
-    const yAxis = d3.axisLeft(yScale);
-
     svg.append("g")
+        .attr("class", "x-axis")
         .attr("transform", `translate(0, ${height - margin.bottom})`)
-        .call(xAxis)
-        .call(
-            d3
-              .axisBottom(xScale)
-              .tickFormat((d) => d3.format(".1f")(d / 1000) + "K")
-              .tickSizeOuter(0)
-          );
+        .call(d3.axisBottom(xScale)
+            .tickFormat((d) => d3.format(".1f")(d / 1000) + "K")
+            .tickSizeOuter(0));
 
     svg.append("g")
+        .attr("class", "y-axis")
         .attr("transform", `translate(${margin.left}, 0)`)
-        .call(yAxis)
-        .call(
-            d3
-              .axisLeft(yScale)
-              .tickFormat((d) => d + "m")
-          );
+        .call(d3.axisLeft(yScale)
+            .tickFormat((d) => d + "m"));
 
     //Label the axes
     svg
         .append("text")
-        .attr("class", "x-axis-label")
+        .attr("class", "x-axis")
         .attr("x", width / 2)
         .attr("y", height + margin.top - 20)
         .style("text-anchor", "middle")
@@ -107,7 +98,7 @@ function createBubbleChart(data) {
 
     svg
         .append("text")
-        .attr("class", "y-axis-label")
+        .attr("class", "y-axis")
         .attr("x", -height / 2)
         .attr("y", -margin.left + 40)
         .style("text-anchor", "middle")
