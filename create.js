@@ -217,7 +217,7 @@ function createParallelCoordinatesPlot(data) {
                 .style("fill", "none")
                 .attr('opacity', 1.1)
                 .style("stroke-width", 2) // Adjust the line width
-                .on("click",handleTypeClick)
+                .on("click", handleTypeClick)
                 .on("mouseover", handleMouseOverType)
                 .on("mouseout", handleMouseOutType)
                 .append("title")
@@ -416,4 +416,81 @@ function createChordDiagram(data) {
     .style("stroke", "black")
     .attr("d", arc);
     
+}
+
+function createBarChart(data) {
+
+    const width = 500 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+
+    //Select the #barChart element and append an SVG to it
+    const svg = d3.select("#barChart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    //Group the data by generation and count legendary Pokémon
+    const generationData = d3.group(data, d => d.generation);
+    const generationCounts = Array.from(generationData, ([generation, group]) => ({
+        generation: generation,
+        legendaryCount: d3.sum(group, d => d.is_legendary),
+    }));
+
+    //Create the x and y scales
+    const xScale = d3.scaleBand()
+        .domain(generationCounts.map(d => d.generation))
+        .range([0, width])
+        .padding(0.1);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, d3.max(generationCounts, d => d.legendaryCount)])
+        .nice()
+        .range([height, 0]);
+
+    //Append and style the bars using the data and scales
+    svg.selectAll(".bar")
+        .data(generationCounts)
+        .enter()
+        .append("rect")
+        .attr("class", "legendary_bar")
+        .attr("x", d => xScale(d.generation))
+        .attr("y", d => yScale(d.legendaryCount))
+        .attr("width", xScale.bandwidth())
+        .attr("height", d => height - yScale(d.legendaryCount))
+        .attr("fill", "steelblue")
+        .attr("stroke", "black")
+        .attr('opacity', 1.1)
+        .on("click", handleGenerationClick)
+        .on("mouseover", handleMouseOverGeneration)
+        .on("mouseout", handleMouseOutGeneration)
+        .append("title")
+        .text( d =>
+            `Generation: ${d.generation}\nNum Legendaries:${d.legendaryCount}`
+        );
+
+    //Append x and y axes to the chart
+    svg.append("g")
+        .attr("class", "x-axis")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(xScale));
+
+    svg.append("g")
+        .attr("class", "y-axis")
+        .call(d3.axisLeft(yScale).tickSizeOuter(0));
+
+    //Add labels
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height + margin.bottom - 5)
+        .attr("text-anchor", "middle")
+        .text("Generation");
+
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -margin.left + 10)
+        .attr("text-anchor", "middle")
+        .text("Number of Legendaries");
 }

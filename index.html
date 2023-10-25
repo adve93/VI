@@ -46,7 +46,13 @@
             #pieChart {
                 position: fixed;
                 bottom: 50px;
-                right: 800px;
+                right: 750px;
+            }
+
+            #barChart {
+                position: fixed;
+                bottom: 20px;
+                left: 30px;
             }
         </style>
         <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -59,6 +65,7 @@
     <body onload="startDashboard()" >
         <div class="dashboard">
             <div class="visualization" id="chorDiagram"></div>
+            <div class="visualization" id="barChart"></div>
             <div class="visualization" id="bubbleChart"></div>
             <div class="visualization" id="pieChart"></div>
             <div class="visualization" id="parallelCoordinatesPlot"></div>

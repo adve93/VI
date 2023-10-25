@@ -77,6 +77,88 @@ function handleTypeClick(event, item) {
     } 
 }
 
+function handleGenerationClick(event, item) {
+
+    //Initialize variables
+    var clickedBar;
+    var genTemp;
+
+    //Select all circles
+    const allBars = d3.selectAll(".legendary_bar");
+
+    selected.set("generation", item.generation);
+    genTemp = item.generation;
+       
+
+    //Save the clickedCircle and clickedLine
+    clickedBar = allBars.filter(function (d) {
+        return genTemp === d.generation;
+    });
+    
+    //Check to see if type was already selected
+    if(clickedBar.attr('opacity') == 1) {
+
+        selected.set("generation", "");
+
+        //Deselect type
+        allBars.attr('opacity', 1.1);
+
+    } else {
+
+        //Select type
+        allBars.filter(function (d) {
+            return genTemp !== d.generation;
+            })
+            .attr('opacity', 0.3);
+        
+
+        clickedBar.attr('opacity', 1)
+
+    } 
+}
+
+function handleMouseOverGeneration(event, item) {
+
+    //Initialize variables
+    var clickedBar;
+    var genTemp;
+
+    //Select all bars
+    const allBars = d3.selectAll(".legendary_bar");
+
+    //Save the clickedBar
+    genTemp = item.generation;
+    clickedBar = allBars.filter(function (d) {
+        return genTemp === d.generation;
+        });
+
+
+    //Mark circle and line has overed
+    clickedBar.attr("fill", "red");
+
+}
+
+function handleMouseOutGeneration(event, item) {
+
+    //Initialize variables
+    var clickedBar;
+    var genTemp;
+
+    //Select all bars
+    const allBars = d3.selectAll(".legendary_bar");
+
+    //Save the clickedBar
+    genTemp = item.generation;
+    clickedBar = allBars.filter(function (d) {
+        return genTemp === d.generation;
+        });
+
+
+    //Mark circle and line has overed
+    clickedBar.attr("fill", "steelblue");
+    
+}
+
 function handleMouseOverType(event, item) {
 
     //Initialize variables
