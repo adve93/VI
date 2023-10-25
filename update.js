@@ -13,6 +13,7 @@ function updateIdioms(filters) {
 
     updatePieChart();
     updateBarChart();
+    updateBubbleChart();
 }
 
 // A function that create / update the plot for a given variable:
@@ -153,5 +154,86 @@ function updateBarChart() {
         .text(d => {
             return `Generation: ${d.generation}\nNumero Legendaries: ${d.legendaryCount}`;
         });
+
+}
+
+function updateBubbleChart() {
+
+    //Define variables
+    var data;
+    const width = 750 - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
+
+    //Filter data
+    if (!generation) {
+        data = globalData;   
+    }
+    else {
+        data = globalData.filter(function (d) {
+            return d.generation === generation;
+        });
+        console.log("entrou");
+    }
+
+    const svg = d3.select("#bubbleChart")
+        .select("svg").select("g");
+
+    //Calculate average values for height_m and base_egg_steps by type
+    const averageData = d3.rollup(data, group => ({
+            averageHeight: d3.mean(group, d => d.height_m),
+            averageBaseEggSteps: Math.round(d3.mean(group, d => d.base_egg_steps)),
+            type: group[0].type1,
+            averageWeight: d3.mean(group, d => d.weight_kg)
+        }), 
+        d => d.type1
+    );
+
+    //Calculate the Pearson correlation coefficient (r) for your data
+    const correlationCoefficient = calculatePearsonCorrelation(averageData);
+
+
+    //Update the yScale domain with the new data
+    const yScale = d3.scaleLinear()
+        .domain([0, d3.max(averageData.values(), d => d.averageHeight)])
+        .range([height - margin.bottom, margin.top]);
+
+    //Update xScale
+    const xScale = d3.scaleLinear()
+        .domain([0, d3.max(averageData.values(), d => d.averageBaseEggSteps)])
+        .range([margin.left, width - margin.right]);
+    
+    //Update the radius
+    const rScale = d3.scaleLinear()
+        .domain([d3.min(averageData.values(), d => d.averageWeight), d3.max(averageData.values(), d => d.averageWeight)])
+        .range([10, 20]);
+   
+    //Re-render the x-axis
+    svg.select(".x-axis")
+        .transition()
+        .duration(1000)
+        .call(d3.axisBottom(xScale));
+
+    // re-render the y-axis
+    svg.select(".y-axis")
+        .transition()
+        .duration(1000)
+        .call(d3.axisLeft(yScale).tickSizeOuter(0));
+        
+    // Update the data for the bars
+    const circles = svg.selectAll(".circle_type")
+        .data(averageData);
+
+    // Update the bars' positions and heights
+    circles.transition()
+        .duration(1000)
+        .attr("cx", d => xScale(d[1].averageBaseEggSteps))
+        .attr("cy", d => yScale(d[1].averageHeight))
+        .attr("r", d => rScale(d[1].averageWeight))
+        .attr("type", d => d[1].type)
+        .attr("fill", d => typeColors[d[1].type])
+        .select("title")
+        .text( d =>
+            `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
+        );
 
 }
