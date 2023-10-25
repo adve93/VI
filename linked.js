@@ -44,6 +44,12 @@ function handleTypeClick(event, item) {
     if(clickedCircle.attr('opacity') == 1) {
 
         console.log("Unselecting... " + selected.get("type"));
+        selected.set("type", "")
+
+        updateIdioms(selected);
+
+        allCircles = d3.selectAll(".circle_type");
+        allLines = d3.selectAll(".line_type");
 
         //Deselect type
         allCircles.attr('opacity', 1.1);
@@ -53,6 +59,11 @@ function handleTypeClick(event, item) {
     } else {
 
         console.log("Selecting... " + selected.get("type"));
+
+        updateIdioms(selected);
+
+        allCircles = d3.selectAll(".circle_type");
+        allLines = d3.selectAll(".line_type");
 
         //Select type
         allCircles.filter(function (d) {
@@ -76,7 +87,6 @@ function handleTypeClick(event, item) {
 
     } 
 
-    updateIdioms(selected);
 }
 
 function handleGenderClick(event, item){

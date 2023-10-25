@@ -18,9 +18,25 @@ function updateIdioms(filters) {
     }
     console.log("}")
 
+    var data;
+
+    if (gender === "Male") {
+        data = globalData.filter(function (d) {
+            return d.percentage_male === 100;
+        });
+    }
+    else if (gender === "Female") {
+        data = globalData.filter(function (d) {
+            return d.percentage_male === 0;
+        });
+    }
+    else {
+        data = globalData;
+    }
+
+    updateParallelCoordinatesPlot(data);
+    updateBubbleChart(data);
     updatePieChart();
-    updateParallelCoordinatesPlot();
-    updateBubbleChart();
 }
 
 // A function that create / update the plot for a given variable:
@@ -60,11 +76,14 @@ function updatePieChart() {
 
     const data_ready = pie(Object.entries(avg));
 
-    // map to data
-    const chart = d3.select("#pieChart")
+    const svg = d3.select("#pieChart")
         .select("svg")
-        .select("g")
-        .selectAll("path")
+        .select("g");
+    
+    svg.selectAll(".slice").remove();   // Remove old slices
+
+    // map to data
+    const chart = svg.selectAll("path")
         .data(data_ready);
 
     // Build the pie chart
@@ -104,26 +123,10 @@ function updatePieChart() {
 
 }
 
-function updateParallelCoordinatesPlot() {
+function updateParallelCoordinatesPlot(data) {
 
     const width = 800 - margin.left - margin.right;
     const height = 350 - margin.top - margin.bottom;
-
-    var data;
-
-    if (gender === "Male") {
-        data = globalData.filter(function (d) {
-            return d.percentage_male === 100;
-        });
-    }
-    else if(gender === "Female") {
-        data = globalData.filter(function (d) {
-            return d.percentage_male === 0;
-        });
-    }
-    else {
-        data = globalData;
-    }
 
     //Calculate average values for fighting stats
     const updatedAverageData = d3.rollup(data,
@@ -213,26 +216,15 @@ function updateParallelCoordinatesPlot() {
     });
 }
 
-function updateBubbleChart(){
+function updateBubbleChart(data){
 
     const width = 750 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
 
-    var data;
 
-    if (gender === "Male") {
-        data = globalData.filter(function (d) {
-            return d.percentage_male === 100;
-        });
-    }
-    else if (gender === "Female") {
-        data = globalData.filter(function (d) {
-            return d.percentage_male === 0;
-        });
-    }
-    else {
-        data = globalData;
-    }
+    const filteredData = data.filter(function (d) {
+        return (d.height_m > 0) && (d.weight_kg > 0);
+    });
 
     //Calculate average values for height_m and base_egg_steps
     const updatedAverageData = d3.rollup(filteredData,
@@ -245,16 +237,22 @@ function updateBubbleChart(){
         d => d.type1
     );
 
-    const filteredData = updatedAverageData.filter(d => !isNaN(d[1].averageBaseEggSteps) && !isNaN(d[1].averageHeight));
+    // Calculate the Pearson correlation coefficient (r) for your data
+    const correlationCoefficient = calculatePearsonCorrelation(updatedAverageData);
 
     const svg = d3.select("#bubbleChart").select("svg").select("g");
+
     svg.selectAll(".circle_type").remove();     // Remove bubbles 
     svg.selectAll(".pearson").remove();     // Remove pearson line
 
-    const xMax = d3.max(filteredData, d => d.averageBaseEggSteps);
-    const yMax = d3.max(filteredData, d => d.averageHeight);
-    const rMin = d3.min(filteredData, d => d.weight_kg);
-    const rMax = d3.max(filteredData, d => d.weight_kg);
+    //const xMax = d3.max(filteredData, d => d.base_egg_steps);
+    //const yMax = d3.max(filteredData, d => d.height_m);
+    //const rMin = d3.min(filteredData, d => d.weight_kg);
+    //const rMax = d3.max(filteredData, d => d.weight_kg);
+    const xMax = 35000;
+    const yMax = 4;
+    const rMin = 30;
+    const rMax = 150;
 
     //Define scales for x and y
     const xScale = d3.scaleLinear()
@@ -271,7 +269,7 @@ function updateBubbleChart(){
 
     //Add circles to the scatter plot representing each country
     svg.selectAll(".circle")
-        .data(filteredData)
+        .data(updatedAverageData)
         .enter()
         .append("circle")
         .attr("class", "circle_type")
@@ -290,4 +288,16 @@ function updateBubbleChart(){
         .text(d =>
             `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
         );
+
+    // Add a Pearson correlation line
+    svg.append("line")
+        .attr("class", "pearson")
+        .attr("x1", xScale(d3.min(updatedAverageData, d => d[1].averageBaseEggSteps)))
+        .attr("y1", yScale(d3.min(updatedAverageData, d => d[1].averageHeight)))
+        .attr("x2", xScale(d3.max(updatedAverageData, d => d[1].averageBaseEggSteps)))
+        .attr("y2", yScale(d3.max(updatedAverageData, d => d[1].averageHeight)))
+        .style("stroke", "black")
+        .style("stroke-width", 2)
+        .append("title")
+        .text(`Pearson Correlation: ${Math.round(correlationCoefficient * 1000) / 1000}`)
 }

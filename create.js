@@ -19,9 +19,6 @@ function createBubbleChart(data) {
         d => d.type1
     );
 
-    console.log(data)
-    console.log(filteredData)
-
     // Calculate the Pearson correlation coefficient (r) for your data
     const correlationCoefficient = calculatePearsonCorrelation(averageData);
 
@@ -33,10 +30,14 @@ function createBubbleChart(data) {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const xMax = d3.max(averageData, d => d.averageBaseEggSteps);
-    const yMax = d3.max(averageData, d => d.averageHeight);
-    const rMin = d3.min(averageData, d => d.weight_kg);
-    const rMax = d3.max(averageData, d => d.weight_kg);
+    //const xMax = d3.max(filteredData, d => d.base_egg_steps);
+    //const yMax = d3.max(filteredData, d => d.height_m);
+    //const rMin = d3.min(filteredData, d => d.weight_kg);
+    //const rMax = d3.max(filteredData, d => d.weight_kg);
+    const xMax = 35000;
+    const yMax = 4;
+    const rMin = 30;
+    const rMax = 150;
 
     //Define scales for x and y
     const xScale = d3.scaleLinear()
@@ -51,6 +52,7 @@ function createBubbleChart(data) {
         .domain([rMin, rMax])
         .range([10, 20]);
 
+        
     //Add circles to the scatter plot representing each country
     svg.selectAll(".circle")
         .data(averageData)
@@ -73,6 +75,7 @@ function createBubbleChart(data) {
             `Type: ${d[1].type}\nAverage Steps:${d[1].averageBaseEggSteps}\nAverage Height:${Math.round(d[1].averageHeight * 10) / 10}\nAverage Weight:${Math.round(d[1].averageWeight * 10) / 10}`
         );
 
+        
     // Add a Pearson correlation line
     svg.append("line")
         .attr("class", "pearson")
@@ -84,7 +87,6 @@ function createBubbleChart(data) {
         .style("stroke-width", 2)
         .append("title")
         .text(`Pearson Correlation: ${Math.round(correlationCoefficient*1000)/1000}`)
-
 
     //Add axes
     const xAxis = d3.axisBottom(xScale);
