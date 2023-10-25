@@ -64,6 +64,7 @@ function startDashboard() {
         createParallelCoordinatesPlot(data);
         createPieChart(data);
         createChordDiagram(data);
+        createBarChart(data);
 
     })
     .catch((error) => {
