@@ -64,6 +64,18 @@ function startDashboard() {
         createPieChart(data);
         createChordDiagram(data);
         createBarChart(data);
+        
+        // Get the container for the color key
+        const colorKey = d3.select("#color-key");
+
+        // Create a color key for Pokémon types
+        colorKey
+            .selectAll(".type-color")
+            .data(Object.entries(typeColors))
+            .enter()
+            .append("div")
+            .attr("class", "type-color")
+            .html((d) => `<div class="color-circle" style="background-color: ${d[1]}"></div><div class="type-name">${d[0]}</div`);
 
     })
     .catch((error) => {
@@ -72,3 +84,5 @@ function startDashboard() {
       });
 
 }
+
+

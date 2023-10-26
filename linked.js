@@ -44,9 +44,6 @@ function handleTypeClick(event, item) {
         console.log("Unselecting... " + selected.get("type"));
 
         selected.set("type", "");
-        updateIdioms(selected);
-
-        //Reassign updated elements
 
         //Select all circles
         allCircles = d3.selectAll(".circle_type");
@@ -60,12 +57,6 @@ function handleTypeClick(event, item) {
                 .attr('stroke-width', 1);
 
     } else {
-
-        console.log("Selecting... " + selected.get("type"));
-
-        updateIdioms(selected);
-
-        //Reassign updated elements
 
         //Select all circles
         allCircles = d3.selectAll(".circle_type");
@@ -100,6 +91,8 @@ function handleTypeClick(event, item) {
         .raise();
 
     } 
+    updatePieChart(selected);
+    updateBarChart(selected);
 }
 
 function handleGenderClick(event, item) {
@@ -113,8 +106,6 @@ function handleGenderClick(event, item) {
         console.log("Unselecting... " + gender);
         selected.set("gender", "");
 
-        updateIdioms(selected);
-
         allSlices = d3.selectAll(".slice");
 
         allSlices.attr("stroke", "white")
@@ -125,8 +116,6 @@ function handleGenderClick(event, item) {
 
         console.log("Selecting... " + gender);
         selected.set("gender", gender);
-
-        updateIdioms(selected);
 
         allSlices = d3.selectAll(".slice");
 
@@ -144,6 +133,10 @@ function handleGenderClick(event, item) {
             .attr("stroke", "black")
             .attr('stroke-width', 1.2);
     }
+
+    updateBubbleChart(selected);
+    updateParallelCoordinatesPlot(selected);
+    updateBarChart(selected);
 }
 
 function handleGenerationClick(event, item) {
@@ -168,14 +161,11 @@ function handleGenerationClick(event, item) {
     if(clickedBar.attr('opacity') == 1) {
 
         selected.set("generation", "");
-        updateIdioms(selected);
 
         //Deselect type
         allBars.attr('opacity', 1.1);
 
     } else {
-
-        updateIdioms(selected);
         
         //Select type
         allBars.filter(function (d) {
@@ -187,6 +177,10 @@ function handleGenerationClick(event, item) {
         clickedBar.attr('opacity', 1)
 
     } 
+
+    updateBubbleChart(selected);
+    updateParallelCoordinatesPlot(selected);
+    updatePieChart(selected);
 }
 
 function handleMouseOverGeneration(event, item) {

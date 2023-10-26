@@ -40,20 +40,47 @@
             #parallelCoordinatesPlot {
                 position: fixed;
                 bottom: 10px;
-                right: 0px;
+                right: -31px;
             }
 
             #pieChart {
                 position: fixed;
-                bottom: 50px;
-                right: 800px;
+                bottom: 0px;
+                right: 730px;
             }
 
             #barChart {
                 position: fixed;
-                bottom: 50px;
+                bottom: 0px;
                 left: 30px;
             }
+
+            #color-key {
+                position: fixed;
+                left: 625px;
+                top: 30px;
+                flex-direction: column;
+                margin: 10px;             
+            }
+
+            .type-color {
+                display: flex;
+                align-items: center;
+                margin: 5px;
+            }
+
+            .color-circle {
+                width: 15px; /* Reduce the circle size */
+                height: 15px; /* Reduce the circle size */
+                border-radius: 50%; /* Make a circle */
+                border: 1px solid black; /* Add a black border */
+            }
+
+            .type-name {
+                margin-left: 5px; /* Reduce the margin */
+                font-size: 12px; /* Reduce the font size */
+            }
+
         </style>
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
@@ -64,6 +91,7 @@
     </head>
     <body onload="startDashboard()" >
         <div class="dashboard">
+            <div id="color-key"></div>
             <div class="visualization" id="chorDiagram"></div>
             <div class="visualization" id="barChart"></div>
             <div class="visualization" id="bubbleChart"></div>

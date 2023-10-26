@@ -4,29 +4,19 @@ var type;
 var gender;
 var generation;
 
-function updateIdioms(filters) {
 
-    type = filters.get("type");
-    gender = filters.get("gender");
-    generation = filters.get("generation");
+function select(selected) {
 
+    type = selected.get("type");
+    gender = selected.get("gender");
+    generation = selected.get("generation");
 
-    console.log("Applying filters {");;
-    for (const [key, value] of selected) {
-        if (value) {
-            console.log(`  ${key}: ${value}`);
-        }
-    }
-    console.log("}")
-
-    updatePieChart();
-    updateBarChart();
-    updateParallelCoordinatesPlot();
-    updateBubbleChart();
 }
 
 // A function that create / update the plot for a given variable:
-function updatePieChart() {
+function updatePieChart(selected) {
+
+    select(selected);
 
     const width = 350 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
@@ -106,7 +96,9 @@ function updatePieChart() {
 
 }
 
-function updateBarChart() {
+function updateBarChart(selected) {
+
+    select(selected);
 
     //Define variables
     const width = 500 - margin.left - margin.right;
@@ -171,7 +163,9 @@ function updateBarChart() {
 
 }
 
-function updateParallelCoordinatesPlot() {
+function updateParallelCoordinatesPlot(selected) {
+
+    select(selected);
 
     const width = 800 - margin.left - margin.right;
     const height = 350 - margin.top - margin.bottom;
@@ -265,9 +259,14 @@ function updateParallelCoordinatesPlot() {
                 .text(d => `Type: ${type}\n${tooltip.join('\n')}`);
         });
     });
+    if(type) {
+        reSelectTypeMarks();
+    }
 }
 
-function updateBubbleChart() {
+function updateBubbleChart(selected) {
+
+    select(selected);
 
     const width = 750 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
@@ -319,8 +318,9 @@ function updateBubbleChart() {
         .enter()
         .append("circle")   
         .attr("class", "circle_type")
-        .transition()
-        .duration(1000)
+        //.transition()
+        //.duration(1000)
+        //.delay((d, i) => i * 100)
         .attr("cx", d => xScale(d[1].averageBaseEggSteps))
         .attr("cy", d => yScale(d[1].averageHeight))
         .attr("r", d => rScale(d[1].averageWeight))
@@ -330,7 +330,7 @@ function updateBubbleChart() {
         .attr("stroke", "black")
         .attr('opacity', 1.1);
 
-    // Add tooltips to all bars with the movie title as the content
+    // Add tooltips to all circles
     svg.selectAll(".circle_type")
         .on("click", handleTypeClick)
         .on("mouseover", handleMouseOverType)
@@ -343,14 +343,17 @@ function updateBubbleChart() {
     // Add a Pearson correlation line
     svg.append("line")
         .attr("class", "pearson")
-        .transition()
-        .duration(1000)
+        //.transition()
+        //.duration(1000)
         .attr("x1", xScale(d3.min(updatedAverageData, d => d[1].averageBaseEggSteps)))
         .attr("y1", yScale(d3.min(updatedAverageData, d => d[1].averageHeight)))
         .attr("x2", xScale(d3.max(updatedAverageData, d => d[1].averageBaseEggSteps)))
         .attr("y2", yScale(d3.max(updatedAverageData, d => d[1].averageHeight)))
         .style("stroke", "black")
-        .style("stroke-width", 2)
+        .style("stroke-width", 2);
+
+    // Add tooltips to pearson line
+    svg.selectAll(".pearson")
         .append("title")
         .text(`Pearson Correlation: ${Math.round(correlationCoefficient * 1000) / 1000}`);
 
@@ -369,6 +372,8 @@ function updateBubbleChart() {
     if(type) {
         reSelectTypeMarks();
     }
+    var i = 0;
+    updatedAverageData.forEach(d => console.log(d.type))
 }
 
 
