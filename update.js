@@ -49,6 +49,7 @@ function updatePieChart(selected) {
         .select("g");
 
     svg.selectAll(".slice").remove();   // Remove old slices
+    svg.selectAll(".text_pie").remove();
 
     // map to data
     const chart = svg.selectAll("path")
@@ -77,7 +78,7 @@ function updatePieChart(selected) {
         .style("font-size", 17);
 
     if (filterLabel) filterLabel.remove();
-
+        /*
     if (type) {
         // Add the filters text under the pie chart
         filterLabel = d3.select("#pieChart")
@@ -87,7 +88,7 @@ function updatePieChart(selected) {
             .attr("y", 400)
             .style("text-anchor", "start")
             .style("font-size", 20);
-    }
+    }*/
 
     
     if(gender) {
@@ -372,6 +373,7 @@ function updateBubbleChart(selected) {
     if(type) {
         reSelectTypeMarks();
     }
+    
     var i = 0;
     updatedAverageData.forEach(d => console.log(d.type))
 }

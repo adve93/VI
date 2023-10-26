@@ -91,8 +91,10 @@ function handleTypeClick(event, item) {
         .raise();
 
     } 
+
     updatePieChart(selected);
     updateBarChart(selected);
+    
 }
 
 function handleGenderClick(event, item) {
