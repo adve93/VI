@@ -111,7 +111,7 @@ function updatePieChart() {
     if (filterLabel) filterLabel.remove();      // Remove label with all selected filters
 
     if (type) {
-        // Add the "hi" text under the pie chart
+        // Add the filters text under the pie chart
         filterLabel = d3.select("#pieChart")
             .append("text")
             .text(type)

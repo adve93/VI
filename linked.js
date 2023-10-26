@@ -14,10 +14,11 @@ function handleTypeClick(event, item) {
     var typeTemp;
 
     //Select all circles
-    const allCircles = d3.selectAll(".circle_type");
+    var allCircles = d3.selectAll(".circle_type");
 
     //Select all lines
-    const allLines = d3.selectAll(".line_type");
+    var allLines = d3.selectAll(".line_type");
+
 
     //Get selected type
     if(item[1].type != null) {
@@ -32,14 +33,12 @@ function handleTypeClick(event, item) {
 
     }
 
+    var clicked = getClickedTypeMarks(typeTemp, allCircles, allLines);
+
     //Save the clickedCircle and clickedLine
-    clickedCircle = allCircles.filter(function (d) {
-        return typeTemp === d[1].type;
-    });
-    
-    clickedLine = allLines.filter(function (d) {
-        return typeTemp === d[0][2];
-    });
+    clickedCircle = clicked[0];
+    clickedLine = clicked[1];
+
     //Check to see if type was already selected
     if(clickedCircle.attr('opacity') == 1) {
 
@@ -48,7 +47,12 @@ function handleTypeClick(event, item) {
 
         updateIdioms(selected);
 
+        //Reassign updated elements
+
+        //Select all circles
         allCircles = d3.selectAll(".circle_type");
+
+        //Select all lines
         allLines = d3.selectAll(".line_type");
 
         //Deselect type
@@ -62,8 +66,20 @@ function handleTypeClick(event, item) {
 
         updateIdioms(selected);
 
+        //Reassign updated elements
+
+        //Select all circles
         allCircles = d3.selectAll(".circle_type");
+
+        //Select all lines
         allLines = d3.selectAll(".line_type");
+
+        clicked = getClickedTypeMarks(typeTemp, allCircles, allLines);
+
+        //Save the updated clickedCircle and clickedLine
+        clickedCircle = clicked[0];
+        clickedLine = clicked[1];
+
 
         //Select type
         allCircles.filter(function (d) {
@@ -93,20 +109,46 @@ function handleGenderClick(event, item){
     var gender = item.data[0];
 
     //Select all slices
-    const allSlices = d3.selectAll(".slices");
+    var allSlices = d3.selectAll(".slice");
 
     if(selected.get("gender") === gender) {
 
         console.log("Unselecting... " + gender);
         selected.set("gender", "");
+
+        updateIdioms(selected);
+
+        allSlices = d3.selectAll(".slice");
+
+        allSlices.attr("stroke", "white")
+                .attr('stroke-width', 1.1)
+                .style("opacity", 1);
     }
     else {
 
         console.log("Selecting... " + gender);
         selected.set("gender", gender);
+
+        updateIdioms(selected);
+
+        allSlices = d3.selectAll(".slice");
+
+        //Select gender
+        allSlices.filter(function (d) {
+            console.log(d.data[0])
+            return gender !== d.data[0];
+        })
+            .style("opacity", 0.3)
+            .style('stroke-opacity', '0');
+
+        allSlices.filter(function (d) {
+            return gender === d.data[0];
+        })
+            .attr("stroke", "black")
+            .attr('stroke-width', 1.2);
     }
 
-    updateIdioms(selected);
+
 
 }
 
@@ -127,26 +169,18 @@ function handleMouseOverType(event, item) {
     if(item[1].type != null) {
         
         typeTemp = item[1].type;
-        clickedCircle = allCircles.filter(function (d) {
-            return typeTemp === d[1].type;
-            });
-        
-        clickedLine = allLines.filter(function (d) {
-            return typeTemp === d[0][2];
-            });
 
     } else {
 
         typeTemp = item[0][2];
-        clickedCircle = allCircles.filter(function (d) {
-            return typeTemp === d[1].type;
-            });
-        
-        clickedLine = allLines.filter(function (d) {
-            return typeTemp === d[0][2];
-        });
 
     }
+
+    var clicked = getClickedTypeMarks(typeTemp, allCircles, allLines);
+
+    //Save the clickedCircle and clickedLine
+    clickedCircle = clicked[0];
+    clickedLine = clicked[1];
 
     //Mark circle and line has overed
     clickedCircle.attr("fill", "red")
@@ -173,29 +207,34 @@ function handleMouseOutType(event, item) {
     if(item[1].type != null) {
         
         typeTemp = item[1].type;
-        clickedCircle = allCircles.filter(function (d) {
-            return typeTemp === d[1].type;
-            });
-        
-        clickedLine = allLines.filter(function (d) {
-            return typeTemp === d[0][2];
-            });
 
     } else {
 
         typeTemp = item[0][2];
-        clickedCircle = allCircles.filter(function (d) {
-            return typeTemp === d[1].type;
-            });
-        
-        clickedLine = allLines.filter(function (d) {
-            return typeTemp === d[0][2];
-        });
 
     }
+
+    var clicked = getClickedTypeMarks(typeTemp, allCircles, allLines);
+
+    //Save the clickedCircle and clickedLine
+    clickedCircle = clicked[0];
+    clickedLine = clicked[1];
 
     //Mark circle and line has overed
     clickedCircle.attr("fill", typeColors[typeTemp]);
     clickedLine.style("stroke", typeColors[typeTemp]);
 
+}
+
+function getClickedTypeMarks(type, circles, lines){
+
+    clickedCircle = circles.filter(function (d) {
+        return type === d[1].type;
+    });
+
+    clickedLine = lines.filter(function (d) {
+        return type === d[0][2];
+    });
+
+    return [clickedCircle, clickedLine];
 }
