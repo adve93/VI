@@ -78,18 +78,6 @@ function updatePieChart(selected) {
 
     if (filterLabel) filterLabel.remove();
 
-    /*
-    if (type) {
-        // Add the filters text under the pie chart
-        filterLabel = d3.select("#pieChart")
-            .append("text")
-            .text(type)
-            .attr("x", (width / 2))
-            .attr("y", 400)
-            .style("text-anchor", "start")
-            .style("font-size", 20);
-    }
-    */
 
     
     if(gender) {

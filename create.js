@@ -468,7 +468,7 @@ function createBarChart(data) {
         .attr("y", d => yScale(d.legendaryCount))
         .attr("width", xScale.bandwidth())
         .attr("height", d => height - yScale(d.legendaryCount))
-        .attr("fill", "steelblue")
+        .attr("fill", "#4E4E4E")
         .attr("stroke", "black")
         .attr('opacity', 1.1)
         .on("click", handleGenerationClick)
