@@ -4,8 +4,13 @@ function createBubbleChart(data) {
     const width = 750 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
 
+    // Get rid of pokemon with incomplete data
+    const filteredData = data.filter(function (d) {
+        return (d.height_m > 0) && (d.weight_kg > 0);
+    });
+
     //Calculate average values for height_m and base_egg_steps by type
-    const averageData = d3.rollup(data, 
+    const averageData = d3.rollup(filteredData, 
         group => ({
             averageHeight: d3.mean(group, d => d.height_m),
             averageBaseEggSteps: Math.round(d3.mean(group, d => d.base_egg_steps)),
@@ -26,18 +31,28 @@ function createBubbleChart(data) {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
+    //const xMax = d3.max(filteredData, d => d.base_egg_steps);
+    //const yMax = d3.max(filteredData, d => d.height_m);
+    //const rMin = d3.min(filteredData, d => d.weight_kg);
+    //const rMax = d3.max(filteredData, d => d.weight_kg);
+    const xMax = 35000;
+    const yMax = 4;
+    const rMin = 30;
+    const rMax = 150;
+
     //Define scales for x and y
     const xScale = d3.scaleLinear()
-        .domain([0, d3.max(averageData.values(), d => d.averageBaseEggSteps)])
+        .domain([0, xMax])
         .range([margin.left, width - margin.right]);
 
     const yScale = d3.scaleLinear()
-        .domain([0, d3.max(averageData.values(), d => d.averageHeight)])
+        .domain([0, yMax])
         .range([height - margin.bottom, margin.top]);
 
     const rScale = d3.scaleLinear()
-        .domain([d3.min(averageData.values(), d => d.averageWeight), d3.max(averageData.values(), d => d.averageWeight)])
+        .domain([rMin, rMax])
         .range([10, 20]);
+
 
     //Add circles to the scatter plot representing each country
     svg.selectAll(".circle")
@@ -63,6 +78,7 @@ function createBubbleChart(data) {
 
     // Add a Pearson correlation line
     svg.append("line")
+        .attr("class", "pearson")
         .attr("x1", xScale(d3.min(averageData, d => d[1].averageBaseEggSteps)))
         .attr("y1", yScale(d3.min(averageData, d => d[1].averageHeight)))
         .attr("x2", xScale(d3.max(averageData, d => d[1].averageBaseEggSteps)))
@@ -85,7 +101,7 @@ function createBubbleChart(data) {
         .attr("class", "y-axis")
         .attr("transform", `translate(${margin.left}, 0)`)
         .call(d3.axisLeft(yScale)
-            .tickFormat((d) => d + "m"));
+            .tickFormat((d) => d));
 
     //Label the axes
     svg
@@ -103,7 +119,7 @@ function createBubbleChart(data) {
         .attr("y", -margin.left + 40)
         .style("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
-        .text("Height");
+        .text("Height (m)");
 
     }
 
@@ -127,6 +143,8 @@ function createParallelCoordinatesPlot(data) {
         d => d.type1
     );
 
+    const yMin = d3.min(globalData, d => d3.min([d.attack, d.sp_attack, d.defense, d.sp_defense, d.hp, d.speed]));      // Min y possible value
+    const yMax = d3.max(globalData, d => d3.max([d.attack, d.sp_attack, d.defense, d.sp_defense, d.hp, d.speed]));      // Max y possible value
 
     //Selecting HTML element and appeding svg element
     const svg = d3.select("#parallelCoordinatesPlot")
@@ -139,20 +157,20 @@ function createParallelCoordinatesPlot(data) {
     const stats = ["Attack", "SpAttack", "Defense", "SpDefense", "HP", "Speed"];
 
 
-    const yTickValues = [40, 60, 80, 100, 120, 140];
+    const yTickValues = [65, 130, 195, 255];
 
     // Define the y-scale for the stats
     const yScales = {
-        Attack: d3.scaleLinear().domain([40, 140]).range([height, 0]),
-        SpAttack: d3.scaleLinear().domain([40, 140]).range([height, 0]),
-        Defense: d3.scaleLinear().domain([40, 140]).range([height, 0]),
-        SpDefense: d3.scaleLinear().domain([40, 140]).range([height, 0]),
-        HP: d3.scaleLinear().domain([40, 140]).range([height, 0]),
-        Speed: d3.scaleLinear().domain([40, 140]).range([height, 0])
+        Attack: d3.scaleLinear().domain([yMin, yMax]).range([height, 0]),
+        SpAttack: d3.scaleLinear().domain([yMin, yMax]).range([height, 0]),
+        Defense: d3.scaleLinear().domain([yMin, yMax]).range([height, 0]),
+        SpDefense: d3.scaleLinear().domain([yMin, yMax]).range([height, 0]),
+        HP: d3.scaleLinear().domain([yMin, yMax]).range([height, 0]),
+        Speed: d3.scaleLinear().domain([yMin, yMax]).range([height, 0])
     };
 
     // Create a single shared scale for all axes
-    const scale = d3.scaleLinear().domain([40, 140]).range([height, 0]);
+    const scale = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
 
     const offset = width / (stats.length + 1);
 
@@ -190,7 +208,7 @@ function createParallelCoordinatesPlot(data) {
         });
 
         const tooltip = stats.map(stat => {
-            return `${stat}: ${averageData.get(type)[stat]}`;
+            return `Average ${stat}: ${averageData.get(type)[stat]}`;
         });
 
         // Create points
@@ -258,7 +276,7 @@ function createPieChart(data) {
     const width2 = 350 - margin.left - margin.right;
     const height2 = 300 - margin.top - margin.bottom;
 
-    const male_average = d3.mean(data, d => d.percentage_male);
+    const male_average = d3.mean(data, (d) => (d.percentage_male !== -1) ? d.percentage_male : NaN);
     const female_average = 100 - male_average;
 
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
@@ -297,6 +315,7 @@ function createPieChart(data) {
         .attr("stroke", "white")
         .style("stroke-width", "2px")
         .style("opacity", 1)
+        .on("click", handleGenderClick)
         .append("title")
         .text(d => `${d.data[1].toFixed(2)}%`);
 
@@ -314,6 +333,9 @@ function createPieChart(data) {
 }
 
 function createChordDiagram(data) {
+
+    const width = 600 - margin.left - margin.right;
+    const height = 500 - margin.top - margin.bottom;
 
     //Define radius
     const outerRadius = 40;
