@@ -99,6 +99,11 @@ function updatePieChart() {
             .style("font-size", 20);
     }
 
+    
+    if(gender) {
+        reSelectGenderMarks();
+    }
+
 }
 
 function updateBarChart() {
@@ -353,6 +358,10 @@ function updateBubbleChart() {
         .transition()
         .duration(1000)
         .call(d3.axisLeft(yScale).tickSizeOuter(0));
+
+    if(type) {
+        reSelectTypeMarks();
+    }
 }
 
 

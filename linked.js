@@ -316,3 +316,53 @@ function getClickedTypeMarks(type, circles, lines) {
 
     return [clickedCircle, clickedLine];
 }
+
+function reSelectTypeMarks() {
+
+    //Select all circles
+    var allCircles = d3.selectAll(".circle_type");
+
+    //Select all lines
+    var allLines = d3.selectAll(".line_type");
+
+    var clicked = getClickedTypeMarks(selected.get("type"), allCircles, allLines);
+
+    allCircles.attr('opacity', 0.3);
+    
+    allLines.attr('opacity', 0.02)
+        .attr('stroke-width', 0.2);
+
+    //Save the clickedCircle and clickedLine
+    clickedCircle = clicked[0];
+    clickedLine = clicked[1];
+
+    clickedCircle.attr('opacity', 1)
+        .raise();
+
+    clickedLine.attr('opacity', 1)
+        .attr('stroke-width', 1)
+        .raise();
+
+}
+
+function reSelectGenderMarks() {
+    var gender = selected.get("gender");
+    
+
+    //Select all slices
+    var allSlices = d3.selectAll(".slice");
+    
+    allSlices.filter(function (d) {
+        console.log(d.data[0])
+        return gender !== d.data[0];
+    })
+        .style("opacity", 0.3)
+        .style('stroke-opacity', '0');
+
+    allSlices.filter(function (d) {
+        return gender === d.data[0];
+    })
+        .attr("stroke", "black")
+        .attr('stroke-width', 1.2);
+
+}
