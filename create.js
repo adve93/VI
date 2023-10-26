@@ -269,8 +269,8 @@ function calculatePearsonCorrelation(data) {
 function createPieChart(data) {
 
 
-    const width2 = 350 - margin.left - margin.right;
-    const height2 = 300 - margin.top - margin.bottom;
+    const width2 = 370 - margin.left - margin.right;
+    const height2 = 320 - margin.top - margin.bottom;
 
     const male_average = d3.mean(data, (d) => (d.percentage_male !== -1) ? d.percentage_male : NaN);
     const female_average = 100 - male_average;
@@ -429,7 +429,7 @@ function createChordDiagram(data) {
 
 function createBarChart(data) {
 
-    const width = 500 - margin.left - margin.right;
+    const width = 700 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
     //Select the #barChart element and append an SVG to it
@@ -468,7 +468,7 @@ function createBarChart(data) {
         .attr("y", d => yScale(d.legendaryCount))
         .attr("width", xScale.bandwidth())
         .attr("height", d => height - yScale(d.legendaryCount))
-        .attr("fill", "#4E4E4E")
+        .attr("fill", "grey")
         .attr("stroke", "black")
         .attr('opacity', 1.1)
         .on("click", handleGenerationClick)
