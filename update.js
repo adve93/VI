@@ -19,10 +19,10 @@ function updateIdioms(filters) {
     }
     console.log("}")
 
-    updateParallelCoordinatesPlot();
-    updateBubbleChart();
     updatePieChart();
     updateBarChart();
+    updateParallelCoordinatesPlot();
+    updateBubbleChart();
 }
 
 // A function that create / update the plot for a given variable:
@@ -286,14 +286,11 @@ function updateBubbleChart() {
     svg.selectAll(".circle_type").remove();     // Remove bubbles 
     svg.selectAll(".pearson").remove();     // Remove pearson line
 
-    //const xMax = d3.max(filteredData, d => d.base_egg_steps);
-    //const yMax = d3.max(filteredData, d => d.height_m);
-    //const rMin = d3.min(filteredData, d => d.weight_kg);
-    //const rMax = d3.max(filteredData, d => d.weight_kg);
-    const xMax = 35000;
-    const yMax = 4;
-    const rMin = 30;
-    const rMax = 150;
+    const xMax = d3.max(filteredData, d => d.base_egg_steps);
+    const yMax = d3.max(filteredData, d => d.height_m);
+    const rMin = d3.min(filteredData, d => d.weight_kg);
+    const rMax = d3.max(filteredData, d => d.weight_kg);
+
 
     //Define scales for x and y
     const xScale = d3.scaleLinear()

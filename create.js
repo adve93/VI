@@ -31,14 +31,10 @@ function createBubbleChart(data) {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    //const xMax = d3.max(filteredData, d => d.base_egg_steps);
-    //const yMax = d3.max(filteredData, d => d.height_m);
-    //const rMin = d3.min(filteredData, d => d.weight_kg);
-    //const rMax = d3.max(filteredData, d => d.weight_kg);
-    const xMax = 35000;
-    const yMax = 4;
-    const rMin = 30;
-    const rMax = 150;
+    const xMax = d3.max(filteredData, d => d.base_egg_steps);
+    const yMax = d3.max(filteredData, d => d.height_m);
+    const rMin = d3.min(filteredData, d => d.weight_kg);
+    const rMax = d3.max(filteredData, d => d.weight_kg);
 
     //Define scales for x and y
     const xScale = d3.scaleLinear()
