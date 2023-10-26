@@ -319,6 +319,8 @@ function updateBubbleChart() {
         .enter()
         .append("circle")   
         .attr("class", "circle_type")
+        .transition()
+        .duration(1000)
         .attr("cx", d => xScale(d[1].averageBaseEggSteps))
         .attr("cy", d => yScale(d[1].averageHeight))
         .attr("r", d => rScale(d[1].averageWeight))
@@ -326,7 +328,10 @@ function updateBubbleChart() {
         .attr("fill", d => typeColors[d[1].type])
         .attr('stroke-width', 1)
         .attr("stroke", "black")
-        .attr('opacity', 1.1)
+        .attr('opacity', 1.1);
+
+    // Add tooltips to all bars with the movie title as the content
+    svg.selectAll(".circle_type")
         .on("click", handleTypeClick)
         .on("mouseover", handleMouseOverType)
         .on("mouseout", handleMouseOutType)
@@ -338,6 +343,8 @@ function updateBubbleChart() {
     // Add a Pearson correlation line
     svg.append("line")
         .attr("class", "pearson")
+        .transition()
+        .duration(1000)
         .attr("x1", xScale(d3.min(updatedAverageData, d => d[1].averageBaseEggSteps)))
         .attr("y1", yScale(d3.min(updatedAverageData, d => d[1].averageHeight)))
         .attr("x2", xScale(d3.max(updatedAverageData, d => d[1].averageBaseEggSteps)))
