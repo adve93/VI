@@ -38,15 +38,15 @@ function createBubbleChart(data) {
 
     //Define scales for x and y
     const xScale = d3.scaleLinear()
-        .domain([0, xMax])
+        .domain([0, d3.max(averageData.values(), d => d.averageBaseEggSteps)])
         .range([margin.left, width - margin.right]);
 
     const yScale = d3.scaleLinear()
-        .domain([0, yMax])
+        .domain([0, d3.max(averageData.values(), d => d.averageHeight)])
         .range([height - margin.bottom, margin.top]);
 
     const rScale = d3.scaleLinear()
-        .domain([rMin, rMax])
+        .domain([d3.min(averageData.values(), d => d.averageWeight), d3.max(averageData.values(), d => d.averageWeight)])
         .range([10, 20]);
 
 

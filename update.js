@@ -110,13 +110,12 @@ function updateBarChart() {
     //Filter data
     var dataType = filterByType(globalData);
     var data = filterByGender(dataType);
-    
 
     const svg = d3.select("#barChart")
         .select("svg").select("g");
 
     // Group the non-filtered data by generation and count legendary Pokémon
-    const generationData = d3.group(data, d => d.generation);
+    const generationData = d3.group(globalData, d => d.generation);
     const generationCounts = Array.from(generationData, ([generation, group]) => ({
         generation: generation,
         legendaryCount: d3.sum(group, d => d.is_legendary),
@@ -128,6 +127,14 @@ function updateBarChart() {
         generation: generation,
         legendaryCount: d3.sum(group, d => d.is_legendary),
     }));
+
+    //Impute missing generations
+    for(let i = 0; i < 7; i++) {
+        if(!generationCountsUpdated[i]) {
+            const newObj = { generation: (i+1).toString(), legendaryCount: 0 }
+            generationCountsUpdated.push(newObj)
+        }
+    }
 
     // Update the yScale domain with the new data
     const yScale = d3.scaleLinear()
@@ -154,7 +161,7 @@ function updateBarChart() {
         .attr("height", d => height - yScale(d.legendaryCount))
         .select("title")
         .text(d => {
-            return `Generation: ${d.generation}\nNum Legendaries: ${d.legendaryCount}`;
+            return `Generation: ${d.generation}\nNumero Legendaries: ${d.legendaryCount}`;
         });
 
 }
@@ -284,32 +291,28 @@ function updateBubbleChart() {
     const svg = d3.select("#bubbleChart").select("svg").select("g");
 
     svg.selectAll(".circle_type").remove();     // Remove bubbles 
-    svg.selectAll(".pearson").remove();     // Remove pearson line
-
-    const xMax = d3.max(filteredData, d => d.base_egg_steps);
-    const yMax = d3.max(filteredData, d => d.height_m);
-    const rMin = d3.min(filteredData, d => d.weight_kg);
-    const rMax = d3.max(filteredData, d => d.weight_kg);
+    svg.selectAll(".pearson").remove();     // Remove pearson line      
 
 
     //Define scales for x and y
     const xScale = d3.scaleLinear()
-        .domain([0, xMax])
+        .domain([0, d3.max(updatedAverageData.values(), d => d.averageBaseEggSteps)])
         .range([margin.left, width - margin.right]);
 
     const yScale = d3.scaleLinear()
-        .domain([0, yMax])
+        .domain([0, d3.max(updatedAverageData.values(), d => d.averageHeight)])
         .range([height - margin.bottom, margin.top]);
 
     const rScale = d3.scaleLinear()
-        .domain([rMin, rMax])
+        .domain([d3.min(updatedAverageData.values(), d => d.averageWeight), d3.max(updatedAverageData.values(), d => d.averageWeight)])
         .range([10, 20]);
+
 
     //Add circles to the scatter plot representing each country
     svg.selectAll(".circle")
         .data(updatedAverageData)
         .enter()
-        .append("circle")
+        .append("circle")   
         .attr("class", "circle_type")
         .attr("cx", d => xScale(d[1].averageBaseEggSteps))
         .attr("cy", d => yScale(d[1].averageHeight))
@@ -337,7 +340,19 @@ function updateBubbleChart() {
         .style("stroke", "black")
         .style("stroke-width", 2)
         .append("title")
-        .text(`Pearson Correlation: ${Math.round(correlationCoefficient * 1000) / 1000}`)
+        .text(`Pearson Correlation: ${Math.round(correlationCoefficient * 1000) / 1000}`);
+
+    //Re-render the x-axis
+    svg.select(".x-axis")
+        .transition()
+        .duration(1000)
+        .call(d3.axisBottom(xScale));
+
+    // re-render the y-axis
+    svg.select(".y-axis")
+        .transition()
+        .duration(1000)
+        .call(d3.axisLeft(yScale).tickSizeOuter(0));
 }
 
 
@@ -353,12 +368,12 @@ function filterByType(data){
 function filterByGender(data){
     if (gender === "Male") {
         data = data.filter(function (d) {
-            return d.percentage_male === 100;
+            return d.percentage_male >= 50;
         });
     }
     else if (gender === "Female") {
         data = data.filter(function (d) {
-            return d.percentage_male === 0;
+            return d.percentage_male < 50;
         });
     }
     return data;
