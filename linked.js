@@ -228,7 +228,7 @@ function handleMouseOutGeneration(event, item) {
 
 
     //Mark circle and line has overed
-    clickedBar.attr("fill", "steelblue");
+    clickedBar.attr("fill", "gray");
     
 }
 

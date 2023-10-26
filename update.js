@@ -26,8 +26,8 @@ function updatePieChart(selected) {
 
     select(selected);
 
-    const width = 350 - margin.left - margin.right;
-    const height = 300 - margin.top - margin.bottom;
+    const width = 370 - margin.left - margin.right;
+    const height = 320 - margin.top - margin.bottom;
 
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
     const radius = Math.min(width, height) / 2 - 40;
@@ -91,7 +91,7 @@ function updateBarChart(selected) {
     select(selected);
 
     //Define variables
-    const width = 500 - margin.left - margin.right;
+    const width = 700 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
     //Filter data
