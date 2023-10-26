@@ -318,7 +318,6 @@ function createPieChart(data) {
 
     // Labels
     chart.enter()
-        .attr("class", "text_pie")
         .append('text')
         .text(function (d) { return d.data[0] })
         .attr("transform", function (d) {
