@@ -58,6 +58,8 @@ function handleTypeClick(event, item) {
 
     } else {
 
+        console.log("Selecting... " + gender);
+
         //Select all circles
         allCircles = d3.selectAll(".circle_type");
 
@@ -108,10 +110,9 @@ function handleGenderClick(event, item) {
         console.log("Unselecting... " + gender);
         selected.set("gender", "");
 
-        allSlices = d3.selectAll(".slice");
-
         allSlices.attr("stroke", "white")
             .attr('stroke-width', 1.1)
+            .style('stroke-opacity', '1')
             .style("opacity", 1);
     }
     else {
@@ -119,21 +120,25 @@ function handleGenderClick(event, item) {
         console.log("Selecting... " + gender);
         selected.set("gender", gender);
 
-        allSlices = d3.selectAll(".slice");
-
         //Select gender
         allSlices.filter(function (d) {
             console.log(d.data[0])
             return gender !== d.data[0];
         })
-            .style("opacity", 0.3)
-            .style('stroke-opacity', '0');
+            .attr("stroke", "white")
+            .attr('stroke-width', 1.1)
+            .style('stroke-opacity', '0')
+            .style("opacity", 0.3);
 
         allSlices.filter(function (d) {
+            console.log(d.data[0])
             return gender === d.data[0];
         })
             .attr("stroke", "black")
-            .attr('stroke-width', 1.2);
+            .attr('stroke-width', 1.2)
+            .style('stroke-opacity', '1')
+            .style("opacity", 1);;
+            
     }
 
     updateBubbleChart(selected);
@@ -338,27 +343,5 @@ function reSelectTypeMarks() {
     clickedLine.attr('opacity', 1)
         .attr('stroke-width', 1)
         .raise();
-
-}
-
-function reSelectGenderMarks() {
-    var gender = selected.get("gender");
-    
-
-    //Select all slices
-    var allSlices = d3.selectAll(".slice");
-    
-    allSlices.filter(function (d) {
-        console.log(d.data[0])
-        return gender !== d.data[0];
-    })
-        .style("opacity", 0.3)
-        .style('stroke-opacity', '0');
-
-    allSlices.filter(function (d) {
-        return gender === d.data[0];
-    })
-        .attr("stroke", "black")
-        .attr('stroke-width', 1.2);
 
 }

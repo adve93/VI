@@ -11,6 +11,14 @@ function select(selected) {
     gender = selected.get("gender");
     generation = selected.get("generation");
 
+    console.log("Applying filters {");;
+    for (const [key, value] of selected) {
+        if (value) {
+            console.log(`  ${key}: ${value}`);
+        }
+    }
+    console.log("}")
+
 }
 
 // A function that create / update the plot for a given variable:
@@ -75,26 +83,6 @@ function updatePieChart(selected) {
         })
         .style("text-anchor", "middle")
         .style("font-size", 17);
-
-    if (filterLabel) filterLabel.remove();
-
-    /*
-    if (type) {
-        // Add the filters text under the pie chart
-        filterLabel = d3.select("#pieChart")
-            .append("text")
-            .text(type)
-            .attr("x", (width / 2))
-            .attr("y", 400)
-            .style("text-anchor", "start")
-            .style("font-size", 20);
-    }
-    */
-
-    
-    if(gender) {
-        reSelectGenderMarks();
-    }
 
 }
 
@@ -374,8 +362,6 @@ function updateBubbleChart(selected) {
     if(type) {
         reSelectTypeMarks();
     }
-    var i = 0;
-    updatedAverageData.forEach(d => console.log(d.type))
 }
 
 
