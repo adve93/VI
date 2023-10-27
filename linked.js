@@ -112,13 +112,12 @@ function handleGenderClick(event, item) {
             .style("opacity", 0.3);
 
         allSlices.filter(function (d) {
-            console.log(d.data[0])
             return gender === d.data[0];
         })
             .attr("stroke", "black")
             .attr('stroke-width', 1.2)
             .style('stroke-opacity', '1')
-            .style("opacity", 1);;
+            .style("opacity", 1);
             
     }
 
@@ -322,6 +321,31 @@ function reSelectTypeMarks() {
         .attr('stroke-width', 1)
         .raise();
 
+}
+
+function reSelectGenderMarks() {
+    var gender = selected.get("gender");
+
+
+    //Select all slices
+    var allSlices = d3.selectAll(".slice");
+
+    allSlices.filter(function (d) {
+        console.log(d.data[0])
+        return gender !== d.data[0];
+    })
+        .attr("stroke", "white")
+        .attr('stroke-width', 1.1)
+        .style('stroke-opacity', '0')
+        .style("opacity", 0.3);
+
+    allSlices.filter(function (d) {
+        return gender === d.data[0];
+    })
+        .attr("stroke", "black")
+        .attr('stroke-width', 1.2)
+        .style('stroke-opacity', '1')
+        .style("opacity", 1);
 }
 
 function unselectType(allCircles, allLines) {

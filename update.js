@@ -57,6 +57,7 @@ function updatePieChart(selected) {
         .select("g");
 
     svg.selectAll(".slice").remove();   // Remove old slices
+    svg.selectAll(".pie-label").remove();
 
     // map to data
     const chart = svg.selectAll("path")
@@ -82,8 +83,14 @@ function updatePieChart(selected) {
             return "translate(" + arcGenerator.centroid(d) + ")";
         })
         .style("text-anchor", "middle")
-        .style("font-size", 17);
+        .style("font-size", 17)
+        .attr("class", "pie-label");
 
+    if (filterLabel) filterLabel.remove();
+
+    if (gender) {
+        reSelectGenderMarks();
+    }
 }
 
 function updateBarChart(selected) {

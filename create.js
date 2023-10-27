@@ -363,7 +363,8 @@ function createPieChart(data) {
             return "translate(" + arcGenerator.centroid(d) + ")";
         })
         .style("text-anchor", "middle")
-        .style("font-size", 17);
+        .style("font-size", 17)
+        .attr("class", "pie-label");
 
 }
 
