@@ -363,6 +363,37 @@ function updateBubbleChart(selected) {
         .transition()
         .duration(1000)
         .call(d3.axisLeft(yScale).tickSizeOuter(0));
+    
+    //Create zoom behaviour
+    const zoom = d3.zoom()
+        .scaleExtent([0.5, 4])
+        .on("zoom", zoomedBubbleChart);
+    
+    //Attach the zoom behavior to svg
+    svg.call(zoom);
+
+    function zoomedBubbleChart(event) {
+        const { transform } = event;
+        
+        //Apply the zoom trnasformation
+        svg.selectAll(".circle_type")
+            .attr("transform", transform);
+        
+        //Update axes
+        svg.select(".x-axis")
+            .call(d3.axisBottom(transform.rescaleX(xScale)));
+        svg.select(".y-axis")
+            .call(d3.axisLeft(transform.rescaleY(yScale)));
+    }
+
+    //Reset zoom
+    function resetBubbleChartZoom() {
+        svg.transition()
+            .duration(750)
+            .call(zoom.transform, d3.zoomIdentity);
+    }
+
+    document.getElementById("reset-zoom").addEventListener("click", resetBubbleChartZoom);
 
     if(type) {
         reSelectTypeMarks();

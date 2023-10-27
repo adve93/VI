@@ -99,8 +99,7 @@ function createBubbleChart(data) {
     svg.append("g")
         .attr("class", "y-axis")
         .attr("transform", `translate(${margin.left}, 0)`)
-        .call(d3.axisLeft(yScale)
-            .tickFormat((d) => d));
+        .call(d3.axisLeft(yScale));
 
     //Label the axes
     svg
@@ -119,8 +118,41 @@ function createBubbleChart(data) {
         .style("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
         .text("Height (m)");
+    
+    //Create zoom behaviour
+    const zoom = d3.zoom()
+        .scaleExtent([0.5, 4])
+        .on("zoom", zoomedBubbleChart);
+    
+    //Attach the zoom behavior to svg
+    svg.call(zoom);
 
+    function zoomedBubbleChart(event) {
+        const { transform } = event;
+        
+        //Apply the zoom trnasformation
+        svg.selectAll(".circle_type")
+            .attr("transform", transform);
+        
+        //Update axes
+        svg.select(".x-axis")
+            .call(d3.axisBottom(transform.rescaleX(xScale))
+                .tickFormat((d) => d3.format(".1f")(d / 1000) + "K")
+                .tickSizeOuter(0));
+        svg.select(".y-axis")
+            .call(d3.axisLeft(transform.rescaleY(yScale)));
     }
+
+    //Reset zoom
+    function resetBubbleChartZoom() {
+        svg.transition()
+            .duration(750)
+            .call(zoom.transform, d3.zoomIdentity);
+    }
+
+    document.getElementById("reset-zoom").addEventListener("click", resetBubbleChartZoom);
+
+}
 
 //Function to create a parallel coordinates plot
 function createParallelCoordinatesPlot(data) {

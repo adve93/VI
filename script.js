@@ -78,11 +78,15 @@ function startDashboard() {
             .html((d) => `<div class="color-circle" style="background-color: ${d[1]}"></div><div class="type-name">${d[0]}</div`);
         
         // Get the container for the button
-        const button = d3.select("#but")
+        d3.select("#but")
             .append("button")
             .text("Reset filters")
             .on("click", resetSelectedMap);
-
+        
+        // Get the container for the button
+        d3.select("#reset-zoom")
+            .append("button")
+            .text("Reset Zoom");
     })
     .catch((error) => {
         //If there's an error while loading the CSV data, log the error.
