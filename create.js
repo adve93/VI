@@ -122,7 +122,10 @@ function createBubbleChart(data) {
     //Create zoom behaviour
     const zoom = d3.zoom()
         .scaleExtent([0.5, 4])
-        .on("zoom", zoomedBubbleChart);
+        .on("zoom", zoomedBubbleChart)
+        .filter(event => {
+            return !event.ctrlKey; // Disable zoom when the Ctrl key is pressed to allow panning
+        });;
     
     //Attach the zoom behavior to svg
     svg.call(zoom);
@@ -132,6 +135,10 @@ function createBubbleChart(data) {
         
         //Apply the zoom trnasformation
         svg.selectAll(".circle_type")
+            .attr("transform", transform);
+
+        //Apply the zoom trnasformation
+        svg.selectAll(".pearson")
             .attr("transform", transform);
         
         //Update axes
