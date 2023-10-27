@@ -432,14 +432,14 @@ function createChordDiagram(data) {
         });
         
     });
-
-    var matrix = new Array(17).fill(0).map(() => new Array(17).fill(0));
+    console.log(abilitiesByType); 
+    var matrix = new Array(18).fill(0).map(() => new Array(18).fill(0));
 
     //Iterate through abilitiesByType and fill m
-    for (let x = 0; x < 17; x++) {
-        for (let i = 0; i < 17; i++) {
-            for (let k = 0; k < 17; k++) {
-                for (let l = 0; l < 17; l++) {
+    for (let x = 0; x < 18; x++) {
+        for (let i = 0; i < 18; i++) {
+            for (let k = 0; k < 18; k++) {
+                for (let l = 0; l < 18; l++) {
                     if (abilitiesByType[x][i] === abilitiesByType[k][l]) {
                         matrix[x][k]++;
                         matrix[k][x]++;
@@ -450,7 +450,7 @@ function createChordDiagram(data) {
     }
 
     //Remove relations between same type
-    for (let x = 0; x < 17; x++) {
+    for (let x = 0; x < 18; x++) {
         matrix[x][x]=0;
     }
 
@@ -484,11 +484,11 @@ function createChordDiagram(data) {
     var group = svg.selectAll(".group")
         .data(chords.groups)
         .enter().append("g")
-        .attr("class", "group");
+        .attr("class", "group-type");
 
     // Create the arcs
     group.append("path")
-        .attr("class", "arc")
+        .attr("class", "arc-type")
         .attr("d", arc)
         .data(typing)
         .style("fill", d => typeColors[d])
@@ -528,10 +528,20 @@ function createChordDiagram(data) {
     svg.selectAll(".chord")
         .data(chords)
         .enter().append("path")
-        .attr("class", "chord")
+        .attr("class", "chord-type")
         .attr("d", ribbon)
         .style("fill", function(d) {
             return "url(#gradient-" + d.source.index + "-" + d.target.index + ")";
+        })
+        .on("mouseover", function(d) {
+            // Change the fill color to red when hovering
+            d3.select(this).style("fill", "red");
+        })
+        .on("mouseout", function(d) {
+            // Revert to the gradient fill when not hovering
+            d3.select(this).style("fill", function(d) {
+                return "url(#gradient-" + d.source.index + "-" + d.target.index + ")";
+            });
         })
         .append("title") // Add a title element for tooltips (optional)
         .text(function(d) {

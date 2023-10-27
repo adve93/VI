@@ -122,6 +122,7 @@ function handleGenderClick(event, item) {
     }
 
     updateBubbleChart(selected);
+    updateChordDiagram(selected);
     updateParallelCoordinatesPlot(selected);
     updateBarChart(selected);
 }
@@ -163,6 +164,7 @@ function handleGenerationClick(event, item) {
     } 
 
     updateBubbleChart(selected);
+    updateChordDiagram(selected);
     updateParallelCoordinatesPlot(selected);
     updatePieChart(selected);
 }
@@ -214,6 +216,7 @@ function handleMouseOverType(event, item) {
     //Initialize variables
     var hoveredCircle;
     var hoveredLine;
+    var hoveredRibbon;
     var typeTemp;
 
     //Select all circles
@@ -243,6 +246,28 @@ function handleMouseOverType(event, item) {
     .raise();
     hoveredLine.style("stroke", "red")
     .raise();
+
+}
+
+function handleMouseOverChord(event, item) {
+
+    //Initialize variables
+    var hoveredRibbon;
+    var typeTemp;
+
+
+    //Select all lines
+    const allRibbons = d3.selectAll(".chord-type");
+
+    if(item[1].type != null) {
+        
+        typeTemp = item[1].type;
+
+    } else {
+
+        typeTemp = item[0][2];
+
+    }
 
 }
 
@@ -408,6 +433,7 @@ function resetSelectedMap() {
     const allSlices = d3.selectAll(".slice");
 
     updateBubbleChart(selected);
+    updateChordDiagram(selected);
     updateParallelCoordinatesPlot(selected);
     updatePieChart(selected);
     updateBarChart(selected);
