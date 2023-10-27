@@ -91,7 +91,7 @@ function updateBarChart(selected) {
     select(selected);
 
     //Define variables
-    const width = 700 - margin.left - margin.right;
+    const width = 500 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
     //Filter data
@@ -269,7 +269,7 @@ function updateBubbleChart(selected) {
     });
 
     //Calculate average values for height_m and base_egg_steps
-    const updatedAverageData = d3.rollup(filteredData,
+    var updatedAverageData = d3.rollup(filteredData,
         group => ({
             averageHeight: d3.mean(group, d => d.height_m),
             averageBaseEggSteps: Math.round(d3.mean(group, d => d.base_egg_steps)),
@@ -278,6 +278,9 @@ function updateBubbleChart(selected) {
         }),
         d => d.type1
     );
+
+    // Sort the rollup result by averageWeight so that smaller circles appear above bigger ones
+    updatedAverageData = new Map([...updatedAverageData].sort((a, b) => b[1].averageWeight - a[1].averageWeight));
 
     // Calculate the Pearson correlation coefficient (r) for your data
     const correlationCoefficient = calculatePearsonCorrelation(updatedAverageData);
@@ -345,13 +348,15 @@ function updateBubbleChart(selected) {
     // Add tooltips to pearson line
     svg.selectAll(".pearson")
         .append("title")
-        .text(`Pearson Correlation: ${Math.round(correlationCoefficient * 1000) / 1000}`);
+        .text(`Pearson Correlation: ${interpretCorrelation(correlationCoefficient)}`);
 
     //Re-render the x-axis
     svg.select(".x-axis")
         .transition()
         .duration(1000)
-        .call(d3.axisBottom(xScale));
+        .call(d3.axisBottom(xScale)
+            .tickFormat((d) => d3.format(".1f")(d / 1000) + "K")
+            .tickSizeOuter(0));
 
     // re-render the y-axis
     svg.select(".y-axis")

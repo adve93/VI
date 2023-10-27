@@ -76,6 +76,12 @@ function startDashboard() {
             .append("div")
             .attr("class", "type-color")
             .html((d) => `<div class="color-circle" style="background-color: ${d[1]}"></div><div class="type-name">${d[0]}</div`);
+        
+        // Get the container for the button
+        const button = d3.select("#but")
+            .append("button")
+            .text("Reset filters")
+            .on("click", resetSelectedMap);
 
     })
     .catch((error) => {

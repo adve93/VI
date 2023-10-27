@@ -41,20 +41,7 @@ function handleTypeClick(event, item) {
     //Check to see if type was already selected
     if(clickedCircle.attr('opacity') == 1) {
 
-        console.log("Unselecting... " + selected.get("type"));
-
-        selected.set("type", "");
-
-        //Select all circles
-        allCircles = d3.selectAll(".circle_type");
-
-        //Select all lines
-        allLines = d3.selectAll(".line_type");
-
-        //Deselect type
-        allCircles.attr('opacity', 1.1);
-        allLines.attr('opacity', 1.1)
-                .attr('stroke-width', 1);
+        unselectType(allCircles, allLines);
 
     } else {
 
@@ -107,13 +94,7 @@ function handleGenderClick(event, item) {
 
     if (selected.get("gender") === gender) {
 
-        console.log("Unselecting... " + gender);
-        selected.set("gender", "");
-
-        allSlices.attr("stroke", "white")
-            .attr('stroke-width', 1.1)
-            .style('stroke-opacity', '1')
-            .style("opacity", 1);
+        unselectGender(allSlices);
     }
     else {
 
@@ -167,10 +148,7 @@ function handleGenerationClick(event, item) {
     //Check to see if type was already selected
     if(clickedBar.attr('opacity') == 1) {
 
-        selected.set("generation", "");
-
-        //Deselect type
-        allBars.attr('opacity', 1.1);
+        unselectGeneration(allBars);
 
     } else {
         
@@ -345,3 +323,75 @@ function reSelectTypeMarks() {
         .raise();
 
 }
+
+function unselectType(allCircles, allLines) {
+    
+    console.log("Unselecting... " + selected.get("type"));
+
+    selected.set("type", "");
+
+    //Select all circles
+    allCircles = d3.selectAll(".circle_type");
+
+    //Select all lines
+    allLines = d3.selectAll(".line_type");
+
+    //Deselect type
+    allCircles.attr('opacity', 1.1);
+    allLines.attr('opacity', 1.1)
+                .attr('stroke-width', 1);
+
+}
+
+function unselectGender(allSlices) {
+
+    console.log("Unselecting... " + gender);
+        selected.set("gender", "");
+
+        allSlices.attr("stroke", "white")
+            .attr('stroke-width', 1.1)
+            .style('stroke-opacity', '1')
+            .style("opacity", 1);
+
+}
+
+function unselectGeneration(allBars) {
+
+    selected.set("generation", "");
+
+    //Deselect type
+    allBars.attr('opacity', 1.1);
+
+}
+
+// Function to reset the selected map to its original state
+function resetSelectedMap() {
+
+    selected.set("type", "");
+    selected.set("gender", "");
+    selected.set("generation", "");
+
+    //Select all circles
+    const allCircles = d3.selectAll(".circle_type");
+
+    //Select all lines
+    const allLines = d3.selectAll(".line_type");
+
+    //Select all bars
+    const allBars = d3.selectAll(".legendary_bar");
+
+    //Select all slices
+    const allSlices = d3.selectAll(".slice");
+
+    updateBubbleChart(selected);
+    updateParallelCoordinatesPlot(selected);
+    updatePieChart(selected);
+    updateBarChart(selected);
+
+    unselectType(allCircles, allLines);
+    unselectGender(allSlices);
+    unselectGeneration(allBars);
+    
+}
+
+

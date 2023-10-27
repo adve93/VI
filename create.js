@@ -10,7 +10,7 @@ function createBubbleChart(data) {
     });
 
     //Calculate average values for height_m and base_egg_steps by type
-    const averageData = d3.rollup(filteredData, 
+    var averageData = d3.rollup(filteredData, 
         group => ({
             averageHeight: d3.mean(group, d => d.height_m),
             averageBaseEggSteps: Math.round(d3.mean(group, d => d.base_egg_steps)),
@@ -19,6 +19,9 @@ function createBubbleChart(data) {
         }), 
         d => d.type1
     );
+    
+    // Sort the rollup result by averageWeight so that smaller circles appear above bigger ones
+    averageData = new Map([...averageData].sort((a, b) => b[1].averageWeight - a[1].averageWeight));
 
     // Calculate the Pearson correlation coefficient (r) for your data
     const correlationCoefficient = calculatePearsonCorrelation(averageData);
@@ -82,7 +85,7 @@ function createBubbleChart(data) {
         .style("stroke", "black")
         .style("stroke-width", 2)
         .append("title")
-        .text(`Pearson Correlation: ${Math.round(correlationCoefficient*1000)/1000}`)
+        .text(`Pearson Correlation: ${interpretCorrelation(correlationCoefficient)}`);
 
 
     //Add axes
@@ -106,7 +109,7 @@ function createBubbleChart(data) {
         .attr("x", width / 2)
         .attr("y", height + margin.top - 20)
         .style("text-anchor", "middle")
-        .text("Steps");
+        .text("Steps to hatch an egg");
 
     svg
         .append("text")
@@ -429,7 +432,7 @@ function createChordDiagram(data) {
 
 function createBarChart(data) {
 
-    const width = 700 - margin.left - margin.right;
+    const width = 500 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
     //Select the #barChart element and append an SVG to it
@@ -468,7 +471,7 @@ function createBarChart(data) {
         .attr("y", d => yScale(d.legendaryCount))
         .attr("width", xScale.bandwidth())
         .attr("height", d => height - yScale(d.legendaryCount))
-        .attr("fill", "grey")
+        .attr("fill", "gray")
         .attr("stroke", "black")
         .attr('opacity', 1.1)
         .on("click", handleGenerationClick)
@@ -502,4 +505,26 @@ function createBarChart(data) {
         .attr("y", -margin.left + 10)
         .attr("text-anchor", "middle")
         .text("Number of Legendaries");
+}
+
+function interpretCorrelation(correlation) {
+    if (correlation > 0) {
+      if (correlation >= 0.9) {
+        return "Strong positive correlation";
+      } else if (correlation >= 0.5) {
+        return "Moderate positive correlation";
+      } else {
+        return "Weak positive correlation";
+      }
+    } else if (correlation < 0) {
+      if (correlation <= -0.9) {
+        return "Strong negative correlation";
+      } else if (correlation <= -0.5) {
+        return "Moderate negative correlation";
+      } else {
+        return "Weak negative correlation";
+      }
+    } else {
+      return "No linear correlation";
+    }
 }

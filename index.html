@@ -4,7 +4,7 @@
         <title>Projeto VI</title>
         <style>
             body{
-                background-image: url('back.png');
+                background-image: url('');
                 background-size: cover;
                 background-repeat: no-repeat;
                 background-attachment: fixed; /* Optional: To prevent scrolling with the page content */
@@ -34,7 +34,7 @@
 
             #bubbleChart {
                 position: fixed;
-                top: 10px;
+                top: 0px;
                 right: 60px;
             }
 
@@ -47,7 +47,7 @@
             #pieChart {
                 position: fixed;
                 bottom: 0px;
-                right: 780px;
+                right: 720px;
             }
 
             #barChart {
@@ -58,7 +58,7 @@
 
             #color-key {
                 position: fixed;
-                left: 900px;
+                left: 650px;
                 top: 30px;
                 flex-direction: column;
                 margin: 10px;             
@@ -93,6 +93,7 @@
     <body onload="startDashboard()" >
         <div class="dashboard">
             <div id="color-key"></div>
+            <div id="but"></div>
             <div class="visualization" id="chorDiagram"></div>
             <div class="visualization" id="barChart"></div>
             <div class="visualization" id="bubbleChart"></div>
