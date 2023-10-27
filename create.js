@@ -121,7 +121,7 @@ function createBubbleChart(data) {
     
     //Create zoom behaviour
     const zoom = d3.zoom()
-        .scaleExtent([0.5, 4])
+        .scaleExtent([0.5, 2])
         .on("zoom", zoomedBubbleChart);
     
     //Attach the zoom behavior to svg
@@ -369,12 +369,11 @@ function createPieChart(data) {
 
 function createChordDiagram(data) {
 
-    const width = 600 - margin.left - margin.right;
-    const height = 500 - margin.top - margin.bottom;
-
-    //Define radius
-    const outerRadius = 40;
-    const innerRadius = outerRadius - 20;
+    //Set variables
+    const width = 700 - margin.left - margin.right;
+    const height = 550 - margin.top - margin.bottom;
+    var outerRadius = Math.min(width, height) * 0.5 - 40;
+    var innerRadius = outerRadius - 30;
 
     //Type pos translator
     const typePos = {
@@ -406,6 +405,9 @@ function createChordDiagram(data) {
     "fighting","poison","ground","flying","psychic","bug","rock","ghost","steel",
     "dragon","dark","fairy"];
 
+    var typingTXT = ["Normal","Fire","Water","Electric","Grass","Ice",
+    "Fighting","Poison","Ground","Flying","Psychic","Bug","Rock","Ghost","Steel",
+    "Dragon","Dark","Fairy"];
 
     //Fill abilitiesByType array
     data.forEach(d => {
@@ -429,47 +431,128 @@ function createChordDiagram(data) {
         });
         
     });
-    
-    //Calculate chords
-    chord = d3.chord()
-        .padAngle(5/innerRadius)
-        .sortSubgroups(d3.descending);
-    
-    //Calculate arcs   
-    arc = d3.arc()
+
+    var matrix = new Array(17).fill(0).map(() => new Array(17).fill(0));
+
+    //Iterate through abilitiesByType and fill m
+    for (let x = 0; x < 17; x++) {
+        for (let i = 0; i < 17; i++) {
+            for (let k = 0; k < 17; k++) {
+                for (let l = 0; l < 17; l++) {
+                    if (abilitiesByType[x][i] === abilitiesByType[k][l]) {
+                        matrix[x][k]++;
+                        matrix[k][x]++;
+                    }
+                }
+            }
+        }
+    }
+
+    //Remove relations between same type
+    for (let x = 0; x < 17; x++) {
+        matrix[x][x]=0;
+    }
+
+    // Create the SVG element
+    var svg = d3.select("#chorDiagram")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+    // Create a chord layout
+    var chord = d3.chord()
+        .padAngle(0.05)
+        .sortSubgroups(d3.descending)
+        .sortChords(d3.descending);
+
+    // Create the arcs
+    var arc = d3.arc()
         .innerRadius(innerRadius)
         .outerRadius(outerRadius);
-    
-    //Calculate ribbons  
-    ribbon = d3.ribbon()
-        .radius(innerRadius - 1)
-        .padAngle(1/innerRadius);
 
-    chords = chord(abilitiesByType);
-    
-    //Create the svg area
-    const svg = d3.select("#chorDiagram")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height  + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
+    // Create the ribbons
+    var ribbon = d3.ribbon()
+        .radius(innerRadius);
 
-    svg.data(chords)
-    .append("g")
-    .selectAll("g")
-    .join("g")
-    .append("path")
-    .style("fill", "red")
-    .style("stroke", "black")
-    .attr("d", arc);
-    
-}
+    // Compute the chord layout
+    var chords = chord(matrix);
+
+    // Create the groups
+    var group = svg.selectAll(".group")
+        .data(chords.groups)
+        .enter().append("g")
+        .attr("class", "group");
+
+    // Create the arcs
+    group.append("path")
+        .attr("class", "arc")
+        .attr("d", arc)
+        .data(typing)
+        .style("fill", d => typeColors[d])
+        .attr('stroke-width',2)
+        .attr("stroke", "black");
+
+    //Gradient
+    var gradient = svg.append("defs").selectAll("linearGradient")
+        .data(chords)
+        .enter().append("linearGradient")
+        .attr("id", function(d) {
+            return "gradient-" + d.source.index + "-" + d.target.index;
+        })
+        .attr("gradientUnits", "userSpaceOnUse")
+        .attr("x1", function(d) {
+            return innerRadius * Math.cos((d.source.endAngle - d.source.startAngle) / 2 + d.source.startAngle - Math.PI / 2);
+        })
+        .attr("y1", function(d) {
+            return innerRadius * Math.sin((d.source.endAngle - d.source.startAngle) / 2 + d.source.startAngle - Math.PI / 2);
+        })
+        .attr("x2", function(d) {
+            return innerRadius * Math.cos((d.target.endAngle - d.target.startAngle) / 2 + d.target.startAngle - Math.PI / 2);
+        })
+        .attr("y2", function(d) {
+            return innerRadius * Math.sin((d.target.endAngle - d.target.startAngle) / 2 + d.target.startAngle - Math.PI / 2);
+        });
+
+    gradient.append("stop")
+        .attr("offset", "0%")
+        .style("stop-color", function(d) { return typeColors[typing[d.source.index]]; });
+
+    gradient.append("stop")
+        .attr("offset", "100%")
+        .style("stop-color", function(d) { return typeColors[typing[d.target.index]]; });
+
+    // Create the ribbons
+    svg.selectAll(".chord")
+        .data(chords)
+        .enter().append("path")
+        .attr("class", "chord")
+        .attr("d", ribbon)
+        .style("fill", function(d) {
+            return "url(#gradient-" + d.source.index + "-" + d.target.index + ")";
+        })
+        .append("title") // Add a title element for tooltips (optional)
+        .text(function(d) {
+            return `${typingTXT[d.source.index]} - ${typingTXT[d.target.index]} / Shared Abilities: ${matrix[d.source.index][d.target.index]}`;
+        });;
+
+    // Append text to the bottom of the chord diagram
+    svg.append("text")
+        .attr("x", 0)
+        .attr("y", -outerRadius - 20)
+        .text("Relation of types by abilities")
+        .style("text-anchor", "middle") 
+        .style("font-family", "Arial")
+        .style("font-size", "14px"); 
+
+
+} 
 
 function createBarChart(data) {
 
     const width = 500 - margin.left - margin.right;
-    const height = 300 - margin.top - margin.bottom;
+    const height = 250 - margin.top - margin.bottom;
 
     //Select the #barChart element and append an SVG to it
     const svg = d3.select("#barChart")

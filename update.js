@@ -378,10 +378,16 @@ function updateBubbleChart(selected) {
         //Apply the zoom trnasformation
         svg.selectAll(".circle_type")
             .attr("transform", transform);
+
+        //Apply the zoom trnasformation
+        svg.selectAll(".pearson")
+            .attr("transform", transform);
         
         //Update axes
         svg.select(".x-axis")
-            .call(d3.axisBottom(transform.rescaleX(xScale)));
+            .call(d3.axisBottom(transform.rescaleX(xScale))
+                .tickFormat((d) => d3.format(".1f")(d / 1000) + "K")
+                .tickSizeOuter(0));
         svg.select(".y-axis")
             .call(d3.axisLeft(transform.rescaleY(yScale)));
     }
