@@ -10,7 +10,7 @@ function createBubbleChart(data) {
     });
 
     //Calculate average values for height_m and base_egg_steps by type
-    const averageData = d3.rollup(filteredData, 
+    var averageData = d3.rollup(filteredData, 
         group => ({
             averageHeight: d3.mean(group, d => d.height_m),
             averageBaseEggSteps: Math.round(d3.mean(group, d => d.base_egg_steps)),
@@ -19,6 +19,9 @@ function createBubbleChart(data) {
         }), 
         d => d.type1
     );
+    
+    // Sort the rollup result by averageWeight so that smaller circles appear above bigger ones
+    averageData = new Map([...averageData].sort((a, b) => b[1].averageWeight - a[1].averageWeight));
 
     // Calculate the Pearson correlation coefficient (r) for your data
     const correlationCoefficient = calculatePearsonCorrelation(averageData);
@@ -82,7 +85,7 @@ function createBubbleChart(data) {
         .style("stroke", "black")
         .style("stroke-width", 2)
         .append("title")
-        .text(`Pearson Correlation: ${Math.round(correlationCoefficient*1000)/1000}`)
+        .text(`Pearson Correlation: ${interpretCorrelation(correlationCoefficient)}`);
 
 
     //Add axes
@@ -96,8 +99,7 @@ function createBubbleChart(data) {
     svg.append("g")
         .attr("class", "y-axis")
         .attr("transform", `translate(${margin.left}, 0)`)
-        .call(d3.axisLeft(yScale)
-            .tickFormat((d) => d));
+        .call(d3.axisLeft(yScale));
 
     //Label the axes
     svg
@@ -106,7 +108,7 @@ function createBubbleChart(data) {
         .attr("x", width / 2)
         .attr("y", height + margin.top - 20)
         .style("text-anchor", "middle")
-        .text("Steps");
+        .text("Steps to hatch an egg");
 
     svg
         .append("text")
@@ -116,8 +118,45 @@ function createBubbleChart(data) {
         .style("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
         .text("Height (m)");
+    
+    //Create zoom behaviour
+    const zoom = d3.zoom()
+        .scaleExtent([0.5, 4])
+        .on("zoom", zoomedBubbleChart);
+    
+    //Attach the zoom behavior to svg
+    svg.call(zoom);
 
+    function zoomedBubbleChart(event) {
+        const { transform } = event;
+        
+        //Apply the zoom trnasformation
+        svg.selectAll(".circle_type")
+            .attr("transform", transform);
+
+        //Apply the zoom trnasformation
+        svg.selectAll(".pearson")
+            .attr("transform", transform);
+        
+        //Update axes
+        svg.select(".x-axis")
+            .call(d3.axisBottom(transform.rescaleX(xScale))
+                .tickFormat((d) => d3.format(".1f")(d / 1000) + "K")
+                .tickSizeOuter(0));
+        svg.select(".y-axis")
+            .call(d3.axisLeft(transform.rescaleY(yScale)));
     }
+
+    //Reset zoom
+    function resetBubbleChartZoom() {
+        svg.transition()
+            .duration(750)
+            .call(zoom.transform, d3.zoomIdentity);
+    }
+
+    document.getElementById("reset-zoom").addEventListener("click", resetBubbleChartZoom);
+
+}
 
 //Function to create a parallel coordinates plot
 function createParallelCoordinatesPlot(data) {
@@ -429,7 +468,7 @@ function createChordDiagram(data) {
 
 function createBarChart(data) {
 
-    const width = 700 - margin.left - margin.right;
+    const width = 500 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
     //Select the #barChart element and append an SVG to it
@@ -468,7 +507,7 @@ function createBarChart(data) {
         .attr("y", d => yScale(d.legendaryCount))
         .attr("width", xScale.bandwidth())
         .attr("height", d => height - yScale(d.legendaryCount))
-        .attr("fill", "grey")
+        .attr("fill", "gray")
         .attr("stroke", "black")
         .attr('opacity', 1.1)
         .on("click", handleGenerationClick)
@@ -502,4 +541,26 @@ function createBarChart(data) {
         .attr("y", -margin.left + 10)
         .attr("text-anchor", "middle")
         .text("Number of Legendaries");
+}
+
+function interpretCorrelation(correlation) {
+    if (correlation > 0) {
+      if (correlation >= 0.9) {
+        return "Strong positive correlation";
+      } else if (correlation >= 0.5) {
+        return "Moderate positive correlation";
+      } else {
+        return "Weak positive correlation";
+      }
+    } else if (correlation < 0) {
+      if (correlation <= -0.9) {
+        return "Strong negative correlation";
+      } else if (correlation <= -0.5) {
+        return "Moderate negative correlation";
+      } else {
+        return "Weak negative correlation";
+      }
+    } else {
+      return "No linear correlation";
+    }
 }
