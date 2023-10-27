@@ -4,7 +4,6 @@
         <title>Projeto VI</title>
         <style>
             body{
-                background-image: url('');
                 background-size: cover;
                 background-repeat: no-repeat;
                 background-attachment: fixed; /* Optional: To prevent scrolling with the page content */
@@ -94,6 +93,14 @@
                 font-size: 12px; /* Reduce the font size */
             }
 
+            .pie-legend {
+                position: fixed;
+                bottom: 230px;
+                right: 800px;
+                font-size: 15px;
+                color: grey;
+            }
+
         </style>
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
@@ -107,7 +114,10 @@
             <div class="visualization" id="chorDiagram"></div>
             <div class="visualization" id="barChart"></div>
             <div class="visualization" id="bubbleChart"></div>
-            <div class="visualization" id="pieChart"></div>
+            <div>
+                <p class="pie-legend">Click on the pie to <br>get information about <br> majorly male/female pokemon</p>
+                <div class="visualization" id="pieChart"></div>
+            </div>
             <div class="visualization" id="parallelCoordinatesPlot"></div>
             <div id="color-key"></div>
             <div id="reset-zoom"></div>

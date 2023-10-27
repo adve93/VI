@@ -294,6 +294,36 @@ function handleMouseOutType(event, item) {
 
 }
 
+function handleMouseOverGender(event, item) {
+
+    var gender = item.data[0];
+
+    //Select all slices
+    var allSlices = d3.selectAll(".slice");
+
+    // Hovered slice
+    allSlices.filter(function (d) {
+        return gender === d.data[0];
+    })
+        .attr("fill", "red");
+
+}
+
+function handleMouseOutGender(event, item) {
+
+    var gender = item.data[0];
+
+    //Select all slices
+    var allSlices = d3.selectAll(".slice");
+
+    // Hovered slice
+    allSlices.filter(function (d) {
+        return gender === d.data[0];
+    })
+        .attr("fill", genderColors[gender]);
+
+}
+
 
 function getClickedTypeMarks(type, circles, lines) {
 

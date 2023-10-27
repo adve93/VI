@@ -71,6 +71,8 @@ function updatePieChart(selected) {
         .attr("stroke", "white")
         .style("stroke-width", "2px")
         .style("opacity", 1)
+        .on("mouseover", handleMouseOverGender)
+        .on("mouseout", handleMouseOutGender)
         .on("click", handleGenderClick)
         .append("title")
         .text(d => `${d.data[1].toFixed(2)}%`);

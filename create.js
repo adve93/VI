@@ -192,7 +192,7 @@ function createParallelCoordinatesPlot(data) {
     const stats = ["Attack", "SpAttack", "Defense", "SpDefense", "HP", "Speed"];
 
 
-    const yTickValues = [65, 130, 195, 255];
+    const yTickValues = [0, 65, 130, 195, 255];
 
     // Define the y-scale for the stats
     const yScales = {
@@ -213,6 +213,13 @@ function createParallelCoordinatesPlot(data) {
     svg.append("g")
         .attr("class", "scale-axis")
         .call(d3.axisLeft(scale).tickValues(yTickValues));
+
+    // Add scale name
+    svg.append("text")
+        .attr("x", 0)
+        .attr("y", height + 20) // Adjust the vertical position of the label
+        .style("text-anchor", "middle")
+        .text("Stat Value");
 
     // Add vertical axes for the selected stats with a fixed separation
     stats.forEach((stat, i) => {
@@ -350,6 +357,8 @@ function createPieChart(data) {
         .attr("stroke", "white")
         .style("stroke-width", "2px")
         .style("opacity", 1)
+        .on("mouseover", handleMouseOverGender)
+        .on("mouseout", handleMouseOutGender)
         .on("click", handleGenderClick)
         .append("title")
         .text(d => `${d.data[1].toFixed(2)}%`);
