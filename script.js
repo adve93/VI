@@ -35,6 +35,28 @@ const typeColors = {
     "dark": "#705746",
     "fairy": "#D685AD"
 };
+
+//Type pos translator
+const typePos = {
+    "normal": 0,
+    "fire": 1,
+    "water": 2,
+    "electric": 3,
+    "grass": 4,
+    "ice": 5,
+    "fighting": 6,
+    "poison": 7,
+    "ground": 8,
+    "flying": 9,
+    "psychic": 10,
+    "bug": 11,
+    "rock": 12,
+    "ghost": 13,
+    "steel": 14,
+    "dragon": 15,
+    "dark": 16,
+    "fairy": 17
+};
   
 //Function to start the dashboard
 function startDashboard() {

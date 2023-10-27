@@ -423,13 +423,13 @@ function updateChordDiagram(selected) {
     var innerRadius = outerRadius - 30;
 
 
-// Create the SVG element
-var svg = d3.select("#chorDiagram")
-.append("svg")
-.attr("width", width)
-.attr("height", height)
-.append("g")
-.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    // Create the SVG element
+    var svg = d3.select("#chorDiagram")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
     var dataGender = filterByGender(globalData);
     var data = filterByGeneration(dataGender);
@@ -494,17 +494,16 @@ var svg = d3.select("#chorDiagram")
         });  
     });
 
-    console.log(abilitiesByTypeUpdate);
 
     var matrixUpdated = new Array(18).fill(0).map(() => new Array(18).fill(0));
-
+    console.log(abilitiesByTypeUpdate) 
+    console.log(abilitiesByTypeUpdate[1][15] + " AQUI")
     //Iterate through abilitiesByTypeUpdate and fill m
     for (let x = 0; x < 18; x++) {
-        for (let i = 0; i < 18; i++) {
-            for (let k = 0; k < 18; k++) {
-                for (let l = 0; l < 18; l++) {
-                    if (abilitiesByTypeUpdate[x][i] === abilitiesByTypeUpdate[k][l]) {
-                        console.log("1")
+        for (let k = 0; k < 18; k++) {
+            for (let i = 0; i < abilitiesByTypeUpdate[x].length; i++) {
+                for (let j = 0; j < abilitiesByTypeUpdate[k].length; j++) {
+                    if (abilitiesByTypeUpdate[x][i] === abilitiesByTypeUpdate[k][j]) {
                         matrixUpdated[x][k]++;
                         matrixUpdated[k][x]++;
                     }
@@ -518,7 +517,6 @@ var svg = d3.select("#chorDiagram")
         matrixUpdated[x][x]=0;
     }
 
-    
     // Create a chord layout
     var chord = d3.chord()
         .padAngle(0.05)
@@ -550,7 +548,8 @@ var svg = d3.select("#chorDiagram")
         .data(typing)
         .style("fill", d => typeColors[d])
         .attr('stroke-width',2)
-        .attr("stroke", "black");
+        .attr("stroke", "black")
+        .on("click", handleTypeClick);
 
     //Gradient
     var gradient = svg.append("defs").selectAll("linearGradient")

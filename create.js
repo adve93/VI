@@ -376,28 +376,6 @@ function createChordDiagram(data) {
     var outerRadius = Math.min(width, height) * 0.5 - 40;
     var innerRadius = outerRadius - 30;
 
-    //Type pos translator
-    const typePos = {
-        "normal": 0,
-        "fire": 1,
-        "water": 2,
-        "electric": 3,
-        "grass": 4,
-        "ice": 5,
-        "fighting": 6,
-        "poison": 7,
-        "ground": 8,
-        "flying": 9,
-        "psychic": 10,
-        "bug": 11,
-        "rock": 12,
-        "ghost": 13,
-        "steel": 14,
-        "dragon": 15,
-        "dark": 16,
-        "fairy": 17
-    };
-
     //Create an object to store abilities by type
     var abilitiesByType = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
 
@@ -432,15 +410,14 @@ function createChordDiagram(data) {
         });
         
     });
-    console.log(abilitiesByType); 
     var matrix = new Array(18).fill(0).map(() => new Array(18).fill(0));
 
     //Iterate through abilitiesByType and fill m
     for (let x = 0; x < 18; x++) {
-        for (let i = 0; i < 18; i++) {
-            for (let k = 0; k < 18; k++) {
-                for (let l = 0; l < 18; l++) {
-                    if (abilitiesByType[x][i] === abilitiesByType[k][l]) {
+        for (let k = 0; k < 18; k++) {
+            for (let i = 0; i < abilitiesByType[x].length; i++) {
+                for (let j = 0; j < abilitiesByType[k].length; j++) {
+                    if (abilitiesByType[x][i] === abilitiesByType[k][j]) {
                         matrix[x][k]++;
                         matrix[k][x]++;
                     }
@@ -493,7 +470,8 @@ function createChordDiagram(data) {
         .data(typing)
         .style("fill", d => typeColors[d])
         .attr('stroke-width',2)
-        .attr("stroke", "black");
+        .attr("stroke", "black")
+        .on("click", handleTypeClick);
 
     //Gradient
     var gradient = svg.append("defs").selectAll("linearGradient")
@@ -530,6 +508,7 @@ function createChordDiagram(data) {
         .enter().append("path")
         .attr("class", "chord-type")
         .attr("d", ribbon)
+        .attr('opacity', 1.1)
         .style("fill", function(d) {
             return "url(#gradient-" + d.source.index + "-" + d.target.index + ")";
         })

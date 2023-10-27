@@ -58,7 +58,7 @@
 
             #color-key {
                 position: fixed;
-                left: 650px;
+                left: 600px;
                 top: 30px;
                 flex-direction: column;
                 margin: 10px;             
@@ -69,6 +69,10 @@
                 right: 0px;
                 top: 0px;
                 margin: 10px;             
+            }
+
+            #but {
+                z-index: 2;            
             }
 
 
@@ -100,14 +104,14 @@
     </head>
     <body onload="startDashboard()" >
         <div class="dashboard">
-            <div id="color-key"></div>
-            <div id="reset-zoom"></div>
-            <div id="but"></div>
             <div class="visualization" id="chorDiagram"></div>
             <div class="visualization" id="barChart"></div>
             <div class="visualization" id="bubbleChart"></div>
             <div class="visualization" id="pieChart"></div>
             <div class="visualization" id="parallelCoordinatesPlot"></div>
+            <div id="color-key"></div>
+            <div id="reset-zoom"></div>
+            <div id="but"></div>
         </div>
         
     </body>
