@@ -407,6 +407,214 @@ function updateBubbleChart(selected) {
     }
 }
 
+function updateChordDiagram(selected) {
+
+    select(selected);
+
+    // Clear the existing SVG content
+    d3.select("#chorDiagram").select("svg").remove();
+
+    
+
+    //Set variables
+    const width = 700 - margin.left - margin.right;
+    const height = 550 - margin.top - margin.bottom;
+    var outerRadius = Math.min(width, height) * 0.5 - 40;
+    var innerRadius = outerRadius - 30;
+
+
+    // Create the SVG element
+    var svg = d3.select("#chorDiagram")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+    var dataGender = filterByGender(globalData);
+    var data = filterByGeneration(dataGender);
+
+    const filteredData = data.filter(function (d) {
+        return (d.height_m > 0) && (d.weight_kg > 0);
+    });
+
+    //Type pos translator
+    const typePos = {
+        "normal": 0,
+        "fire": 1,
+        "water": 2,
+        "electric": 3,
+        "grass": 4,
+        "ice": 5,
+        "fighting": 6,
+        "poison": 7,
+        "ground": 8,
+        "flying": 9,
+        "psychic": 10,
+        "bug": 11,
+        "rock": 12,
+        "ghost": 13,
+        "steel": 14,
+        "dragon": 15,
+        "dark": 16,
+        "fairy": 17
+    };
+
+    //Create an object to store abilities by type
+    var abilitiesByTypeUpdate = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+
+    //Create an object to store types
+    var typing = ["normal","fire","water","electric","grass","ice",
+    "fighting","poison","ground","flying","psychic","bug","rock","ghost","steel",
+    "dragon","dark",    "fairy"];
+
+    var typingTXT = ["Normal","Fire","Water","Electric","Grass","Ice",
+    "Fighting","Poison","Ground","Flying","Psychic","Bug","Rock","Ghost","Steel",
+    "Dragon","Dark","Fairy"];
+
+    //Fill abilitiesByTypeUpdate array
+    filteredData.forEach(d => {
+
+        //Check both type1 and type2
+        const types = [d.type1, d.type2]; 
+
+        //Get Pokemon abilities and push them into the array
+        var abl = [];
+        abl = d.abilities;
+        const validJSONString = abl.replace(/'/g, '"'); //Data in stored as a string so we parse it into an array
+        const array = JSON.parse(validJSONString);
+
+        types.forEach(type => {
+            if(type != -1) { //For mono type pokémon (to catch sentinel value)
+                array.forEach(a => {
+                    if(!(abilitiesByTypeUpdate[typePos[type]].includes(a))) //Check if ablitie is already in array 
+                    abilitiesByTypeUpdate[typePos[type]].push(a);
+                }); 
+            }     
+        });  
+    });
+
+
+    var matrixUpdated = new Array(18).fill(0).map(() => new Array(18).fill(0));
+    console.log(abilitiesByTypeUpdate) 
+    console.log(abilitiesByTypeUpdate[1][15] + " AQUI")
+    //Iterate through abilitiesByTypeUpdate and fill m
+    for (let x = 0; x < 18; x++) {
+        for (let k = 0; k < 18; k++) {
+            for (let i = 0; i < abilitiesByTypeUpdate[x].length; i++) {
+                for (let j = 0; j < abilitiesByTypeUpdate[k].length; j++) {
+                    if (abilitiesByTypeUpdate[x][i] === abilitiesByTypeUpdate[k][j]) {
+                        matrixUpdated[x][k]++;
+                        matrixUpdated[k][x]++;
+                    }
+                }
+            }
+        }
+    }
+
+    //Remove relations between same type
+    for (let x = 0; x < 18; x++) {
+        matrixUpdated[x][x]=0;
+    }
+
+    // Create a chord layout
+    var chord = d3.chord()
+        .padAngle(0.05)
+        .sortSubgroups(d3.descending)
+        .sortChords(d3.descending);
+
+    // Create the arcs
+    var arc = d3.arc()
+        .innerRadius(innerRadius)
+        .outerRadius(outerRadius);
+
+    // Create the ribbons
+    var ribbon = d3.ribbon()
+        .radius(innerRadius);
+
+    // Compute the chord layout
+    var chords = chord(matrixUpdated);
+
+    // Create the groups
+    var group = svg.selectAll(".group")
+        .data(chords.groups)
+        .enter().append("g")
+        .attr("class", "group-type");
+
+    // Create the arcs
+    group.append("path")
+        .attr("class", "arc-type")
+        .attr("d", arc)
+        .data(typing)
+        .style("fill", d => typeColors[d])
+        .attr('stroke-width',2)
+        .attr("stroke", "black")
+        .on("click", handleTypeClick);
+
+    //Gradient
+    var gradient = svg.append("defs").selectAll("linearGradient")
+        .data(chords)
+        .enter().append("linearGradient")
+        .attr("id", function(d) {
+            return "gradient-" + d.source.index + "-" + d.target.index;
+        })
+        .attr("gradientUnits", "userSpaceOnUse")
+        .attr("x1", function(d) {
+            return innerRadius * Math.cos((d.source.endAngle - d.source.startAngle) / 2 + d.source.startAngle - Math.PI / 2);
+        })
+        .attr("y1", function(d) {
+            return innerRadius * Math.sin((d.source.endAngle - d.source.startAngle) / 2 + d.source.startAngle - Math.PI / 2);
+        })
+        .attr("x2", function(d) {
+            return innerRadius * Math.cos((d.target.endAngle - d.target.startAngle) / 2 + d.target.startAngle - Math.PI / 2);
+        })
+        .attr("y2", function(d) {
+            return innerRadius * Math.sin((d.target.endAngle - d.target.startAngle) / 2 + d.target.startAngle - Math.PI / 2);
+        });
+
+    gradient.append("stop")
+        .attr("offset", "0%")
+        .style("stop-color", function(d) { return typeColors[typing[d.source.index]]; });
+
+    gradient.append("stop")
+        .attr("offset", "100%")
+        .style("stop-color", function(d) { return typeColors[typing[d.target.index]]; });
+
+    // Create the ribbons
+    svg.selectAll(".chord")
+        .data(chords)
+        .enter().append("path")
+        .attr("class", "chord-type")
+        .attr("d", ribbon)
+        .style("fill", function(d) {
+            return "url(#gradient-" + d.source.index + "-" + d.target.index + ")";
+        })
+        .on("mouseover", function(d) {
+            // Change the fill color to red when hovering
+            d3.select(this).style("fill", "red");
+        })
+        .on("mouseout", function(d) {
+            // Revert to the gradient fill when not hovering
+            d3.select(this).style("fill", function(d) {
+                return "url(#gradient-" + d.source.index + "-" + d.target.index + ")";
+            });
+        })
+        .append("title") // Add a title element for tooltips (optional)
+        .text(function(d) {
+            return `${typingTXT[d.source.index]} - ${typingTXT[d.target.index]} / Shared Abilities: ${matrixUpdated[d.source.index][d.target.index]}`;
+        });;
+
+    // Append text to the bottom of the chord diagram
+    svg.append("text")
+        .attr("x", 0)
+        .attr("y", -outerRadius - 20)
+        .text("Relation of types by abilities")
+        .style("text-anchor", "middle") 
+        .style("font-family", "Arial")
+        .style("font-size", "14px"); 
+
+}
+
 
 function filterByType(data){
     if (type) {

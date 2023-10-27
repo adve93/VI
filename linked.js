@@ -12,6 +12,10 @@ function handleTypeClick(event, item) {
     var clickedCircle;
     var clickedLine;
     var typeTemp;
+    var typeIndex;
+
+    //Select all chords
+    var allChords = d3.selectAll(".chord-type");
 
     //Select all circles
     var allCircles = d3.selectAll(".circle_type");
@@ -21,14 +25,22 @@ function handleTypeClick(event, item) {
 
     //Get selected type
     if(item[1].type != null) {
-
+        console.log("1")
         selected.set("type", item[1].type);
         typeTemp = item[1].type;
+        typeIndex  = typePos[typeTemp];
        
-    } else {
-
+    } else if(item[0][2] != null){
+        console.log("2")
         selected.set("type", item[0][2]);
         typeTemp = item[0][2];
+        typeIndex  = typePos[typeTemp];
+
+    } else {
+        console.log("3")
+        selected.set("type", item);
+        typeTemp = item;
+        typeIndex  = typePos[typeTemp];
 
     }
 
@@ -38,26 +50,19 @@ function handleTypeClick(event, item) {
     clickedCircle = clicked[0];
     clickedLine = clicked[1];
 
+    //Filter chords of said arc
+    var SelectedChords = allChords.filter(function (d) {
+        return typeIndex === d.source.index || typeIndex === d.target.index;
+    });
+
     //Check to see if type was already selected
     if(clickedCircle.attr('opacity') == 1) {
 
-        unselectType(allCircles, allLines);
+        unselectType(allCircles, allLines, allChords);
 
     } else {
 
         console.log("Selecting... " + gender);
-
-        //Select all circles
-        allCircles = d3.selectAll(".circle_type");
-
-        //Select all lines
-        allLines = d3.selectAll(".line_type");
-
-        clicked = getClickedTypeMarks(typeTemp, allCircles, allLines);
-
-        //Save the updated clickedCircle and clickedLine
-        clickedCircle = clicked[0];
-        clickedLine = clicked[1];
 
         //Select type
         allCircles.filter(function (d) {
@@ -79,12 +84,18 @@ function handleTypeClick(event, item) {
         .attr('stroke-width', 1)
         .raise();
 
+        allChords.attr('opacity', 0.07);
+
+        SelectedChords.attr('opacity', 1);
+
     } 
 
     updatePieChart(selected);
     updateBarChart(selected);
     
 }
+
+
 
 function handleGenderClick(event, item) {
     var gender = item.data[0];
@@ -103,7 +114,6 @@ function handleGenderClick(event, item) {
 
         //Select gender
         allSlices.filter(function (d) {
-            console.log(d.data[0])
             return gender !== d.data[0];
         })
             .attr("stroke", "white")
@@ -122,6 +132,7 @@ function handleGenderClick(event, item) {
     }
 
     updateBubbleChart(selected);
+    updateChordDiagram(selected);
     updateParallelCoordinatesPlot(selected);
     updateBarChart(selected);
 }
@@ -163,6 +174,7 @@ function handleGenerationClick(event, item) {
     } 
 
     updateBubbleChart(selected);
+    updateChordDiagram(selected);
     updateParallelCoordinatesPlot(selected);
     updatePieChart(selected);
 }
@@ -214,6 +226,7 @@ function handleMouseOverType(event, item) {
     //Initialize variables
     var hoveredCircle;
     var hoveredLine;
+    var hoveredRibbon;
     var typeTemp;
 
     //Select all circles
@@ -303,6 +316,15 @@ function reSelectTypeMarks() {
     //Select all lines
     var allLines = d3.selectAll(".line_type");
 
+    var allChords = d3.selectAll(".chord-type");
+
+    var typeIndex = typePos[selected.get("type")];
+
+    //Filter chords of said arc
+    var SelectedChords = allChords.filter(function (d) {
+        return typeIndex === d.source.index || typeIndex === d.target.index;
+    });
+
     var clicked = getClickedTypeMarks(selected.get("type"), allCircles, allLines);
 
     allCircles.attr('opacity', 0.3);
@@ -320,6 +342,10 @@ function reSelectTypeMarks() {
     clickedLine.attr('opacity', 1)
         .attr('stroke-width', 1)
         .raise();
+
+    allChords.attr('opacity', 0.07);
+
+    SelectedChords.attr('opacity', 1);
 
 }
 
@@ -348,7 +374,7 @@ function reSelectGenderMarks() {
         .style("opacity", 1);
 }
 
-function unselectType(allCircles, allLines) {
+function unselectType(allCircles, allLines, allChords) {
     
     console.log("Unselecting... " + selected.get("type"));
 
@@ -360,8 +386,11 @@ function unselectType(allCircles, allLines) {
     //Select all lines
     allLines = d3.selectAll(".line_type");
 
+    allChords = d3.selectAll(".chord-type");
+
     //Deselect type
     allCircles.attr('opacity', 1.1);
+    allChords.attr('opacity', 1.1);
     allLines.attr('opacity', 1.1)
                 .attr('stroke-width', 1);
 
@@ -408,6 +437,7 @@ function resetSelectedMap() {
     const allSlices = d3.selectAll(".slice");
 
     updateBubbleChart(selected);
+    updateChordDiagram(selected);
     updateParallelCoordinatesPlot(selected);
     updatePieChart(selected);
     updateBarChart(selected);
